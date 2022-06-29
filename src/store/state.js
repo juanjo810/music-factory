@@ -7,6 +7,8 @@ export default{
   fetchingImages: false,
   changingPass: false,
   generatingSoundscape: false,
+  noComments: true,
   error: '',
-  images: []
+  images: [],
+  comments:   []
 }

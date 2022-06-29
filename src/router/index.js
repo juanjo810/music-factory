@@ -9,7 +9,6 @@ import MfPerfil from '@/components/view/MfPerfil.vue'
 import MfMisFotos from '@/components/view/MfMisFotos.vue'
 import MfImage from '@/components/view/MfImage.vue'
 import MfReportes from '@/components/view/MfReportes.vue'
-import MfReporte from '@/components/view/MfReporte.vue'
 import MfOtroPerfil from '@/components/view/MfOtroPerfil.vue'
 import MfModificaContra from '@/components/view/MfModificaContra.vue'
 import MfModifica from '@/components/view/MfModifica.vue'
@@ -56,6 +55,11 @@ export default new Router({
           path: 'profile',
           name: 'profile',
           component: () => import('@/components/view2/Profile.vue'),
+        },
+        {
+          path: 'reports',
+          name: 'reports',
+          component: () => import ('@/components/view2/Reports.vue')
         }
       ]
     },
@@ -70,9 +74,21 @@ export default new Router({
       component: MfPerfil
     },
     {
-      path: '/misFotos/:id',
-      name: 'imagen',
+      path: ':id',
+      name: 'image',
       component: MfImage,
+      props: true
+    },
+    {
+      path: ':id',
+      name: 'post',
+      component: () => import('@/components/MfPostsUser.vue'),
+      props: true
+    },
+    {
+      path: ':id',
+      name: 'comments',
+      component: () => import('@/components/view2/Comentarios.vue'),
       props: true
     },
     {
@@ -81,16 +97,16 @@ export default new Router({
       component: MfReportes
     },
     {
-      path: '/reportes/:id',
-      name: 'reporte',
-      component: MfReporte,
+      path: ':id',
+      name: 'report',
+      component: () => import('@/components/view2/Report.vue'),
       props: true
     },
     {
-      path: '/dashboard/:email',
+      path: ':email',
       name: 'otroPerfil',
       component: MfOtroPerfil,
-      props: true
+      props: true,
     },
     {
       path: '/perfil/modificaDatos',

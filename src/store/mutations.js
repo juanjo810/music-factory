@@ -8,13 +8,13 @@ export default{
     state.error = ''
   },
 
-  [types.LOGIN_USER_SUCCESS] (state, {displayName, email}) {
+  [types.LOGIN_USER_SUCCESS] (state, {displayName, email, photoURL, descripcion, siguiendo}) {
     state.fetchingUser = false
     state.error = ''
     if (email === 'jjnc08102000@gmail.com') {
-      state.user.data = {displayName, email, esAdmin: true}
+      state.user.data = {displayName, email, esAdmin: true, photoURL, descripcion, siguiendo}
     } else {
-      state.user.data = {displayName, email, esAdmin: false}
+      state.user.data = {displayName, email, esAdmin: false, photoURL, descripcion, siguiendo}
     }
     state.user.loggedIn = true
   },
@@ -74,8 +74,29 @@ export default{
     })
   },
 
+  [types.REMOVE_COMMENT] (state, id) {
+    state.comments = state.comments.filter(comment => comment.id !== id)
+  },
+
   [types.CONFIRM_REPORT] (state, id) {
     state.images = state.images.filter(image => image.id !== id)
+  },
+
+  [types.FOLLOW_USER] (state, email) {
+    state.user.data.siguiendo.push(email)
+    Vue.set(state.user.data.siguiendo, state.data.siguiendo.lenght - 1, email)
+  },
+
+  [types.STOP_FOLLOW] (state, email) {
+    state.user.data.siguiendo = state.user.data.siguiendo.filter(user => user !== email)
+  },
+
+  [types.EDIT_DESCRIPTION] (state, {id, descripcion}) {
+    state.images.find(image => {
+      if (image.id === id) {
+        image.descripcion = descripcion
+      }
+    })
   },
 
   [types.REGISTER_USER_REQUEST] (state) {
@@ -128,8 +149,12 @@ export default{
     state.error = ''
   },
 
-  [types.CHANGE_INFO_SUCCESS] (state) {
+  [types.CHANGE_INFO_SUCCESS] (state, {user, descripcion}) {
     state.changingPass = false
+    state.user.data.email = user.email
+    state.user.data.displayName = user.displayName
+    state.user.data.photoURL = user.photoURL
+    state.user.data.descripcion = descripcion
     state.error = ''
   },
 
@@ -182,6 +207,37 @@ export default{
     state.fetchingImages = false
   },
 
+  [types.FETCH_COMMENTS_REQUEST] (state, start) {
+    state.error = ''
+    state.fetchingImages = true
+    if (start === '')
+      state.comments = []
+  },
+
+  [types.FETCH_COMMENTS_SUCCESS] (state, comments) {
+    state.fetchingImages = false
+    state.error = ''
+    if (comments.length) {
+      if (!state.comments.length) {
+        state.comments = comments
+      } else {
+        state.comments.push(...comments)
+      }
+      if (comments.lenght < 10) {
+        state.noComments = false  
+      } else {
+        state.noComments = true
+      }
+    } else {
+      state.noComments = false
+    }
+  },
+
+  [types.FETCH_COMMENTS_FAILURE] (state, { error }) {
+    state.error = error
+    state.fetchingImages = false
+  },
+
   [types.ADD_PHOTO_REQUEST] (state) {
     state.error = ''
   },
@@ -189,6 +245,19 @@ export default{
   [types.ADD_PHOTO_SUCCESS] (state, img) {
     state.images.push(img)
     Vue.set(state.images, state.images.lenght - 1, img)
+  },
+
+  [types.ADD_COMMENT_REQUEST] (state) {
+    state.error = ''
+  },
+
+  [types.ADD_COMMENT_SUCCESS] (state, com) {
+    com = {
+      autor: [state.user.data.email, state.user.data.displayName, state.user.data.photoURL, state.user.data.descripcion],
+      ...com
+    }
+    state.comments.push(com)
+    Vue.set(state.comments, state.comments.lenght - 1, com)
   },
 
   [types.REMOVE_POST_SUCCESS] (state, id) {

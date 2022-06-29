@@ -7,6 +7,12 @@ export default{
   getPosts: (state) => {
     return state.images.filter(image => image.esPublico === true)
   },
+  getPostsFollowing: (state) => {
+    return state.images.filter(image => state.user.data.siguiendo.includes(image.owner[0]) && image.esPublico)
+  },
+  getPostsNotFollowing: (state) => {
+    return state.images.filter(image => !state.user.data.siguiendo.includes(image.owner[0]) && image.esPublico)
+  },
   getFivePosts: (state) => {
     var count = 0
     return state.images.filter((image) => {

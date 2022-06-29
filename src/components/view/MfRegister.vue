@@ -1,25 +1,146 @@
 /* eslint-disable */
+/* eslint-disable */
+
 <template>
-  <div class="register-page">
-    <div class="form">
-      <h1>Registro</h1>
-      <input type="text" placeholder="Nombre" v-model="name"/>
-      <input type="text" placeholder="Apellidos" v-model="surname"/>
-      <input type="email" placeholder="Email" v-model="email"/>
-      <input type="password" placeholder="Clave" v-model="password"/>
-      <input type="password" placeholder="Repetir clave" v-model="password2"/>
-      <span class="error" v-if="error">{{ error }}</span>
-      <button id="register_button" @click="register()">Registrarse<router-link class="btn" v-if="!error" to="/"></router-link></button>
-    </div>
-    <div class="cuadroModal" v-if="visibility">
-      <div class="registrado">
-        <h2>Usuario registrado</h2>
-        <label>
-          <b>Ha sido registrado correctamente.</b><br> Por favor, <b>verifique su cuenta</b> haciendo click en el link que hemos enviado a su correo electrónico
-        </label>
-        <button class="btn" @click="continuar()">Continuar</button>
-      </div>
-    </div>
+  <div>
+    <v-card
+        class="mx-auto my-12"
+        max-width="374"
+    >
+      <template slot="progress">
+        <v-progress-linear
+            color="deep-purple"
+            height="10"
+            indeterminate
+        ></v-progress-linear>
+      </template>
+
+      <v-img
+          height="250"
+          style="margin: 5px"
+          src="/img/logo.jpg"
+      ></v-img>
+
+      <v-card-title>Registro</v-card-title>
+
+      <v-card-text>
+
+        <v-row>
+          <v-col
+              cols="12"
+          >
+            <v-text-field
+                v-model="name"
+                label="Nombre"
+                required
+            ></v-text-field>
+          </v-col>
+
+          <v-col
+              cols="12"
+          >
+            <v-text-field
+                v-model="surname"
+                label="Apellidos"
+                required
+            ></v-text-field>
+          </v-col>
+
+          <v-col
+              cols="12"
+          >
+            <v-text-field
+                v-model="email"
+                label="Email"
+                required
+            ></v-text-field>
+          </v-col>
+
+          <v-col
+              cols="12"
+          >
+            <v-file-input
+                v-model="profilePhoto"
+                label="Foto de perfil"
+                required
+            ></v-file-input>
+          </v-col>
+
+          <v-col
+              cols="12"
+          >
+            <v-text-field
+              v-model="password"
+              :append-icon="visible1 ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="visible1 ? 'text' : 'password'"
+              label="Contraseña"
+              counter
+              @click:append="visible1 = !visible1"
+            ></v-text-field>
+          </v-col>
+          <v-col
+              cols="12"
+          >
+            <v-text-field
+                v-model="password2"
+              :append-icon="visible2 ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="visible2 ? 'text' : 'password'"
+              label="Repetir contraseña"
+              counter
+              @click:append="visible2 = !visible2"
+            ></v-text-field>
+
+            <span style="color: red" v-if="error">{{ error }}</span>
+          </v-col>
+        </v-row>
+
+
+
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+            color="deep-purple lighten-2"
+            text
+            @click="register()"
+        >
+          Registrarse
+          <!--<span v-if="fetchingUser">Registrando...</span><span v-else>Iniciar sesión</span>-->
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-dialog
+        v-model="this.visibility"
+        persistent
+        max-width="600"
+    >
+      <v-card>
+        <v-card-title class="text-h5">
+          Registro completado
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col
+                cols="12"
+            >
+            <b>Ha sido registrado correctamente.</b><br> 
+            Por favor, <b>verifique su cuenta</b> haciendo click en el link que hemos enviado a su correo electrónico
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="continuar()"
+          >
+            Continuar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -29,11 +150,14 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data () {
     return {
-      name: 'Juanjo',
-      surname: 'Navarro',
-      email: 'juanjo_810@usal.es',
-      password: 'asdqwe',
-      password2: 'asdqwe',
+      name: '',
+      surname: '',
+      email: '',
+      profilePhoto: '',
+      password: '',
+      password2: '',
+      visible1: false,
+      visible2: false,
       visibility: false
     }
   },
@@ -47,12 +171,13 @@ export default {
     ...mapActions([
       'registerUser'
     ]),
-    register () {
-      this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2 })
+    async register () {
+      await this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
       if (this.error === '') {
         this.name = ''
         this.surname = ''
         this.email = ''
+        this.profilePhoto = ''
         this.password = ''
         this.password2 = ''
         this.visibility = true
@@ -65,85 +190,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .register-page {
-    width: 25%;
-    padding: 8% 0 0;
-    margin: auto;
-  }
-  .form {
-    z-index: 1;
-    background: #FFFFFF;
-    padding: 10%;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  }
-  .form input {
-    font-family: "Roboto", sans-serif;
-    outline: 0;
-    background: #f2f2f2;
-    width: 100%;
-    border: 0;
-    margin: 0 0 15px;
-    padding: 15px;
-    box-sizing: border-box;
-    font-size: 14px;
-  }
-  .form button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 100%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .form button:hover,.form button:active,.form button:focus {
-    background: #17c;
-  }
-  .error{
-    color: red;
-  }
-  .cuadroModal{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #456;
-    opacity: 1;
-  }
-  .registrado{
-    margin-top: 10%;
-    margin-left:25%;
-    margin-right:25%;
-    background: #FFFFFF;
-    padding:5%;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  }
-  .btn {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    border: 0;
-    padding: 15px;
-    width: 40%;
-    margin-top: 2%;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .btn:hover,.btn:active,.btn:focus {
-    background: #17c;
-  }
-</style>

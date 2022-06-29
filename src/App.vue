@@ -4,41 +4,28 @@
       app
       color="primary"
       dark
-      v-if="$route.name!='login' && $route.name!='register'"
+      v-if="$route.name!='login' && $route.name!='register' && $route.name!='forgotPass'"
     >
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
+          alt="MusicFactory Logo"
           class="shrink mr-2"
           contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          src="/img/logo.jpg"
           transition="scale-transition"
           width="40"
+          style="cursor: pointer"
+          @click="$router.push({name: 'dashboard'})"
         />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <h1>MusicFactory</h1>
+        
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
     </v-app-bar>
 
-    <v-main>
+    <v-main style="background-color: #456">
       <router-view/>
     </v-main>
   </v-app>

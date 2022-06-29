@@ -1,42 +1,179 @@
 /* eslint-disable */
 <template>
-  <div class="dashboard-page">
-    <div class="photos">
-      <router-link to="/perfil">
-        <button class="btn-perfil">Mi perfil</button>
-      </router-link>
-      <h1 class="title">Imagen</h1>
-      <img class="imagen" :src="this.image.name"/>
-      <audio controls class="audioControl" v-if="this.image.esPublico">
-        <source :src="this.image.soundscape">
-      </audio>
-      <div class="botones">
-        <button class="btn" v-if="this.image.esPublico" @click="eliminarAudio()">Eliminar audio</button>
-        <button class="btn" v-else-if="this.generatingSoundscape">Generando audio...</button>
-        <button class="btn" v-else @click="generarAudio()">Generar audio</button>
-        <button class="btn" @click="volver()">Volver</button>
-        <button class="btn" @click="eliminarPublicacion()">Eliminar publicacion</button>
-      </div>
-    </div>
-  </div>
+  <v-container>
+    <v-card>
+      <v-container>
+        <v-row>
+          <v-col>
+            <div>
+              <v-card>
+                <template slot="progress">
+                  <v-progress-linear
+                      color="deep-purple"
+                      height="10"
+                      indeterminate
+                  ></v-progress-linear>
+                </template>
+
+                <v-img
+                    :src="image.name"
+                ></v-img>
+
+                <v-card-title>
+                  <v-avatar style="margin-right: 15px">
+                    <img
+                        :src="image.owner[2]"
+                        alt="John"
+                    >
+                  </v-avatar>
+                  <span style="margin-top: 15px;">
+                    {{ image.owner[1] }}
+                  </span>
+                </v-card-title>
+
+                <v-card-text>
+                  <div style="text-align: justify">{{image.descripcion}}</div>
+                </v-card-text>
+                <v-btn
+                      color="deep-purple lighten-2"
+                      text
+                      @click="editarDescripcion()"
+                  >
+                    Editar Descripción
+                  </v-btn>
+
+                <v-divider class="mx-4"></v-divider>
+
+                <v-card-title v-if="image.esPublico">Paisaje Sonoro</v-card-title>
+                <v-card-text v-if="image.esPublico">
+                  <audio controls class="audioControl" style="width: 100%">
+                    <source :src="image.soundscape">
+                  </audio>
+                </v-card-text>
+
+                <v-card-actions>
+
+
+                  <v-btn
+                      color="deep-purple lighten-2"
+                      text
+                      @click="comentarios()"
+                  >
+                    Comentarios
+                  </v-btn>
+
+                  <v-btn
+                      color="deep-purple lighten-2"
+                      text
+                      @click="eliminarAudio()"
+                      v-if="image.esPublico"
+                  >
+                    Eliminar paisaje sonoro
+                  </v-btn>
+                  <v-btn
+                      color="deep-purple lighten-2"
+                      text
+                      @click="generarAudio()"
+                      v-else-if="!generatingSoundscape"
+                  >
+                    Generar paisaje sonoro
+                  </v-btn>
+                  
+                  <v-btn
+                      color=""
+                      text
+                      @click="generarAudio()"
+                      @
+                      v-else
+                  >
+                    Generando paisaje sonoro
+                  </v-btn>
+                  <v-btn
+                      color="deep-purple lighten-2"
+                      text
+                      @click="eliminarPublicacion()"
+                  >
+                    Eliminar publicación
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn icon
+                        :color="image.likes.includes(user.data.email)?'red':''"
+                        @click="darLike(image.likes, image.id)"
+                      v-if="image.esPublico"
+                  >
+                    <span v-if="image.esPublico">{{image.likes.length}}</span>
+                    <v-icon>mdi-heart</v-icon>
+                  </v-btn>
+                </v-card-actions>
+                
+                <span style="color: red" v-if="error">{{ error }}</span>
+              </v-card>
+              <v-dialog
+                v-model="visibility"
+                persistent
+                max-width="600"
+              >
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Editar descripción
+                  </v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <v-col
+                          cols="12"
+                      >
+                        <v-text-field
+                            v-model="descripcion"
+                            label="Descripción de la imagen"
+                            required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color=""
+                        text
+                        @click="cancelar()"
+                    >
+                      Cancelar
+                    </v-btn>
+                    <v-btn
+                        color="green darken-1"
+                        text
+                        @click="confirmar()"
+                    >
+                      Confirmar
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
-  components: {  },
   props: {
     id: String
   },
   data () {
     return {
-      images: []
+      visibility: false,
+      descripcion: ''
     }
   },
   computed: {
     ...mapState([
-      'generatingSoundscape'
+      'generatingSoundscape',
+      'error'
     ]),
     ...mapGetters([
       'getImageById',
@@ -53,20 +190,36 @@ export default {
     ...mapActions([
       'removePost',
       'removeSoundscape',
-      'generateSoundscape'
+      'generateSoundscape',
+      'editDescription'
     ]),
     volver () {
       this.$router.push({name: 'misFotos'})
     },
     eliminarPublicacion () {
       this.removePost({id: this.id, esPublico: this.image.esPublico})
-      this.$router.push({name: 'misFotos'})
+      this.$router.push({name: 'profile'})
     },
     eliminarAudio () {
       this.removeSoundscape(this.id)
     },
     generarAudio () {
       this.generateSoundscape({url: this.image.name, id: this.id})
+    },
+    editarDescripcion () {
+      this.visibility = true
+    },
+    confirmar () {
+      this.editDescription({id: this.id, descripcion: this.descripcion})
+      this.visibility = false
+      this.descripcion = ''
+    },
+    cancelar () {
+      this.visibility = false
+      this.descripcion = ''
+    },
+    comentarios () {
+      this.$router.push({name: 'comments', params: { id: this.id }})
     }
   },
   created () {
@@ -76,71 +229,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .dashboard-page {
-    width: 50%;
-    padding: 3% 0 0;
-    margin: auto;
-  }
-  .photos {
-    background: #FFFFFF;
-    padding: 5%;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  }
-  .btn-perfil{
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 20%;
-    margin-left: 60%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .title{
-    font-family: "Roboto", sans-serif;
-    text-align: center;
-  }
-  .imagen{
-    width:60%;
-    height:60%;
-    margin-left: 25%;
-  }
-  .botones {
-    display:inline;
-    margin:0%;
-  }
-  .btn {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .photos button:hover,.form button:active,.form button:focus {
-    background: #17c;
-  }
-  .audioControl{
-    margin-left:23%;
-    margin-right:13%;
-    margin-bottom: 2%;
-    width: 60%;
-    background-color: #f1f3f4
-  }
-  .error{
-    color: red;
-  }
-</style>

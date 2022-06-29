@@ -21,20 +21,24 @@
       <v-card-title @click="accederPerfil(post.owner)">
         <v-avatar style="margin-right: 15px">
           <img
-              src="https://cdn.vuetifyjs.com/images/john.jpg"
+              :src="post.owner[2]"
               alt="John"
           >
         </v-avatar>
         <span style="margin-top: 15px;">
           {{ post.owner[1] }}
         </span>
-        <v-btn text color="primary" style="margin-top: 15px;">
+        <v-btn 
+        text color="primary"
+        style="margin-top: 15px;"
+        v-if="!user.data.siguiendo.includes(post.owner[0])"
+        @click="seguirUsuario(post.owner[0])">
           Seguir
         </v-btn>
       </v-card-title>
 
       <v-card-text>
-        <div style="text-align: justify">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley</div>
+        <div style="text-align: justify">{{post.descripcion}}</div>
       </v-card-text>
 
       <v-divider class="mx-4"></v-divider>
@@ -52,8 +56,9 @@
         <v-btn
             color="deep-purple lighten-2"
             text
+            @click="comentarios(post.id)"
         >
-          Detalles
+          Comentarios
         </v-btn>
 
         <v-btn
@@ -137,10 +142,10 @@ export default {
       'user'
     ]),
     ...mapGetters([
-      'getPosts'
+      'getPostsFollowing'
     ]),
     posts () {
-      return this.getPosts
+      return this.getPostsFollowing
     }
   },
   methods: {
@@ -171,7 +176,13 @@ export default {
       }
     },
     accederPerfil (owner) {
-      this.$router.push({name: 'otroPerfil', params: { email: owner[0], name: owner[1] }})
+      this.$router.push({name: 'otroPerfil', params: { email: owner[0], name: owner[1], photo: owner[2], descripcion: owner[3] }})
+    },
+    seguirUsuario (email) {
+      this.followUser(email)
+    },
+    comentarios (id) {
+      this.$router.push({name: 'comments', params: { id: id }})
     }
   },
   async created () {

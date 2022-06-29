@@ -2,8 +2,8 @@
   <v-container>
     <v-row>
       <v-col>
-        <h1>Publicaciones recientes</h1>
-        <post-collection class="gallery">
+        <h1>Publicaciones de los que sigues</h1>
+        <post-collection>
         </post-collection>
       </v-col>
     </v-row>
@@ -19,7 +19,3 @@ export default {
   name: "Recent"
 }
 </script>
-
-<style scoped>
-
-</style>

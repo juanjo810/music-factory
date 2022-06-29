@@ -11,8 +11,8 @@ export default{
           API.logOut()
           commit(types.LOGIN_USER_FAILURE, { error: 'No ha verificado su cuenta' })
         } else {
-          commit(types.LOGIN_USER_SUCCESS, userCredential.user)
-          API.getImagesByUser(userCredential.user.email)
+          API.getUserData()
+            .then((credentials) => commit(types.LOGIN_USER_SUCCESS, credentials))
         }
       })
       .catch((error) => {
@@ -25,15 +25,17 @@ export default{
   },
 
   // Fetch user
-  registerUser ({ commit }, { email, password, name, surname, password2 }) {
+  registerUser ({ commit }, { email, password, name, surname, password2, profilePhoto }) {
     commit(types.REGISTER_USER_REQUEST)
     if (password !== password2) {
       console.log(password)
       console.log(password2)
       commit(types.REGISTER_USER_FAILURE, { error: 'Las contraseñas no coinciden' })
     } else {
-      API.register(email, password, name, surname)
-        .then(() => commit(types.REGISTER_USER_SUCCESS))
+      API.register(email, password, name, surname, profilePhoto)
+        .then(() => {
+          commit(types.REGISTER_USER_SUCCESS)
+        })
         .catch(error => {
           if (error.code === 'auth/weak-password') {
             commit(types.REGISTER_USER_FAILURE, { error: 'La contraseña debe contener 6 caracteres o más' })
@@ -76,13 +78,14 @@ export default{
     }
   },
 
-  changeInfo ({commit}, {displayName, posts}) {
+  changeInfo ({commit}, {displayName, profilePhoto, descripcion}) {
     commit(types.CHANGE_INFO_REQUEST)
-    API.changeUserInfo(displayName, posts)
+    API.changeUserInfo(displayName, profilePhoto, descripcion)
       .then(() => {
-        commit(types.CHANGE_INFO_SUCCESS)
+        commit(types.CHANGE_INFO_SUCCESS, {user: API.getUser(), descripcion: descripcion})
       })
-      .catch((error) => commit(types.CHANGE_INFO_FAILURE, { error: error }))
+      .catch((error) => {
+        commit(types.CHANGE_INFO_FAILURE, { error: error })})
   },
 
   deleteAccount ({commit}, {images, email, password}) {
@@ -98,6 +101,20 @@ export default{
           .catch((error) => { commit(types.DELETE_ACCOUNT_FAILURE, {error: error}) })
       })
       .catch(() => commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Credenciales introducidas incorrectas' }))
+  },
+
+  followUser ({commit}, email) {
+    API.followByEmail(email)
+      .then(() => {
+        commit(types.FOLLOW_USER, email)
+      })
+  },
+
+  stopFollow ({commit}, email) {
+    API.stopFollowByEmail(email)
+      .then(() => {
+        commit(types.STOP_FOLLOW, email)
+      })
   },
 
   getImagesByEmail ({ commit }, email) {
@@ -122,21 +139,29 @@ export default{
 
   async getImages ({ commit }) {
     commit(types.FETCH_IMAGES_REQUEST)
-    var query = await API.getAllImages()
-    var images = []
-    query.forEach((doc) => {
-      var image = {
-        id: doc.id,
-        ...doc.data()
-      }
-      images.push(image)
-    })
+    var images = await API.getAllImages()
     commit(types.FETCH_IMAGES_SUCCESS, images)
   },
 
-  async addPhotoFile ({commit}, {file, email, displayName}) {
+  async getImageComments ({ commit }, {id, start}) {
+    commit(types.FETCH_COMMENTS_REQUEST, start)
+    var comments = await API.getCommentsById(id, start)
+    commit(types.FETCH_COMMENTS_SUCCESS, comments)
+  },
+
+  async addComment ({commit}, {idImage, comment}) {
+    commit(types.ADD_COMMENT_REQUEST)
+    var res = await API.uploadComment(idImage, comment)
+    if (res.code === undefined) {
+      commit(types.ADD_COMMENT_SUCCESS, res)
+    } else {
+      commit(types.ADD_COMMENT_FAILURE, res)
+    }
+  },
+
+  async addPhotoFile ({commit}, {file, descripcion}) {
     commit(types.ADD_PHOTO_REQUEST)
-    var res = await API.uploadPhoto(file, email, displayName)
+    var res = await API.uploadPhoto(file, descripcion)
     if (res.code === undefined) {
       commit(types.ADD_PHOTO_SUCCESS, res)
     } else {
@@ -158,20 +183,31 @@ export default{
     }
   },
 
+  async removeComment ({commit}, {idImage, id}) {
+    var res = await API.removeCommentId(idImage, id)
+    if (res === undefined) {
+      commit(types.REMOVE_COMMENT, id)
+    }
+  },
+
   generateSoundscape ({commit}, {url, id}) {
     commit(types.GEN_SOUNDSCAPE_REQUEST)
     var xhr = new XMLHttpRequest()
     xhr.responseType = 'blob'
     var params = url
-    xhr.open('POST', 'https://soundscape-generation.herokuapp.com/', true)
+    xhr.open('POST', 'http://65.108.220.52', true)
 
     xhr.onload = function () {
+      debugger
       if (xhr.status === 200) {
         var byteArray = xhr.response
         API.uploadSoundscape(byteArray, id)
           .then((url) => { commit(types.GEN_SOUNDSCAPE_SUCCESS, {url: url, id: id}) })
           .catch((res) => { commit(types.GEN_SOUNDSCAPE_FAILURE, res) })
+      } else if (xhr.status === 209) {
+        commit(types.GEN_SOUNDSCAPE_FAILURE, {error: 'No se han reconocido objetos en la imagen. Inténtelo de nuevo.'})
       } else {
+        
         commit(types.GEN_SOUNDSCAPE_FAILURE, {error: ' ' + xhr.status + 'Fallo en la petición HTTP'})
       }
     }
@@ -188,15 +224,11 @@ export default{
     commit(types.REMOVE_LIKE, {id, likes})
   },
 
-  downloadAudio (url) {
-    const xhr = new XMLHttpRequest()
-    xhr.responseType = 'arraybuffer'
-    xhr.onload = () => {
-      const arraybuffer = xhr.response
-      console.log(arraybuffer)
-    }
-    xhr.open('GET', url)
-    xhr.send()
+  editDescription ({commit}, {id, descripcion}) {
+    API.editDescriptionById(id, descripcion)
+      .then(() => {
+        commit(types.EDIT_DESCRIPTION, {id: id, descripcion: descripcion})
+      })
   },
 
   async reportPost ({commit}, {id, descripcion}) {

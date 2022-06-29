@@ -2,7 +2,6 @@
 
 <template>
   <v-card
-      :loading="loading"
       class="mx-auto my-12"
       max-width="374"
   >
@@ -16,6 +15,7 @@
 
     <v-img
         height="250"
+        style="margin: 5px"
         src="/img/logo.jpg"
     ></v-img>
 
@@ -38,12 +38,15 @@
             cols="12"
         >
           <v-text-field
-              v-model="password"
-              label="Password"
-              required
+            v-model="password"
+            :append-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="visible ? 'text' : 'password'"
+            label="Contraseña"
+            counter
+            @click:append="visible = !visible"
           ></v-text-field>
 
-          <span class="error" v-if="error">{{ error }}</span>
+          <span style="color: red" v-if="error">{{ error }}</span>
         </v-col>
       </v-row>
 
@@ -62,7 +65,7 @@
       <v-btn
           color="deep-purple lighten-2"
           text
-          @click="logIn()"
+          @click="irADemo()"
       >
         Demo
       </v-btn>
@@ -86,8 +89,9 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
   data () {
     return {
-      email: 'juanjo_810@usal.es',
-      password: 'asdqwe'
+      email: '',
+      password: '',
+      visible: false
     }
   },
   computed: {
@@ -116,77 +120,10 @@ export default {
           this.$router.push({name: 'dashboard'})
         }
       }
+    },
+    irADemo () {
+      this.$router.push({name: 'demo'})
     }
   }
 }
 </script>
-
-<style scoped>
-  .login-page {
-    width: 25%;
-    padding: 8% 0 0;
-    margin: auto;
-  }
-  .form {
-    z-index: 1;
-    background: #FFFFFF;
-    padding: 10%;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  }
-  .form input {
-    font-family: "Roboto", sans-serif;
-    outline: 0;
-    background: #f2f2f2;
-    width: 100%;
-    border: 0;
-    margin: 0 0 15px;
-    padding: 15px;
-    box-sizing: border-box;
-    font-size: 14px;
-  }
-  .btn{
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 40%;
-    border: 0;
-    padding: 15px;
-    margin-left: 120%;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .btn:hover,.btn:active,.btn:focus {
-    background: #17c;
-  }
-  .form button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 100%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .form .message {
-    margin: 15px 0 0;
-    color: #b3b3b3;
-    font-size: 12px;
-  }
-  .form .message .link{
-    color: #17c;
-    text-decoration: none;
-  }
-  .error{
-    color: red;
-  }
-</style>

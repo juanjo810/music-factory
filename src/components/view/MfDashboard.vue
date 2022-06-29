@@ -18,6 +18,11 @@
           <span>Profile</span>
           <v-icon>mdi-account</v-icon>
         </v-btn>
+
+        <v-btn value="reports" @click="$router.push({name:'reports'})" v-if="this.user.esAdmin">
+          <span>Reports</span>
+          <v-icon>mdi-alert</v-icon>
+        </v-btn>
       </v-bottom-navigation>
 
       <router-view></router-view>
@@ -30,7 +35,7 @@
 
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   components: {  },
@@ -44,9 +49,9 @@ export default {
     ...mapGetters([
       'getUser'
     ]),
-    user () {
-      return this.getUser
-    }
+    ...mapState([
+      'user'
+    ])
   },
   methods: {
     ...mapActions([

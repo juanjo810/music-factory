@@ -1,31 +1,65 @@
 /* eslint-disable */
 <template>
-  <div class="dashboard-page">
-    <div class="photos">
-      <router-link to="/perfil">
-        <button class="btn-perfil">Mi perfil</button>
-      </router-link>
-      <h1 class="title">Publicaciones de {{this.name}}</h1>
-      <post-collection :email="this.email" class="gallery">
-      </post-collection>
-    </div>
-  </div>
+<v-container>
+    <v-card>
+      <div>
+        <v-container>
+          <v-row>
+            <v-col cols="4">
+              <img
+                :src="this.photo"
+                alt="John"
+                style="width: 100%; border-radius: 50%"
+              />
+            </v-col>
+            <v-col cols="8">
+              <div style="width: 100%">
+                <v-btn text color="primary" style="float: right" @click="seguirUsuario()" v-if="!user.data.siguiendo.includes(email)">
+                  Seguir
+                </v-btn>
+                <v-btn text color="primary" style="float: right" @click="dejarDeSeguir()" v-else>
+                  Dejar de seguir
+                </v-btn>
+              </div>
+              <div style="margin-top: 30px">
+                <b>{{ this.name }}</b>
+                <p>{{ this.email }}</p>
+                <br />
+                <p>
+                  {{ this.descripcion }}
+                </p>
+              </div>
+            </v-col>
+          </v-row>
+
+          <h3>Publicaciones</h3>
+          <v-row>
+            <v-col cols="4" v-for="(post, index) in this.posts" :key="index">
+              <v-card>
+                <img :src="post.name" alt="John" style="width: 100%" />
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text
+                  @click="detallesImagen(post)"> Detalles </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-import PostCollection from '@/components/MfPostsUser.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  components: { PostCollection },
   props: {
     email: String,
-    name: String
-  },
-  data () {
-    return {
-      images: []
-    }
+    name: String,
+    photo: String,
+    descripcion: String
   },
   computed: {
     ...mapGetters([
@@ -34,15 +68,31 @@ export default {
     ]),
     user () {
       return this.getUser
+    },
+    posts () {
+      return this.getPostsByUser(this.email)
     }
   },
   methods: {
     ...mapActions([
-    ])
+      'followUser',
+      'stopFollow'
+    ]),
+    detallesImagen (imagen) {
+      this.$router.push({name: 'post', params: { id: imagen.id }})
+    },
+    seguirUsuario () {
+      this.followUser(this.email)
+    },
+    dejarDeSeguir () {
+      this.stopFollow(this.email)
+    }
   },
   created () {
     if (!this.user.loggedIn) {
       this.$router.push({name: 'login'})
+    } else if (this.user.data.email === this.email) {
+      this.$router.push({name: 'profile'})
     }
   },
   updated () {
@@ -52,56 +102,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .dashboard-page {
-    width: 70%;
-    padding: 3% 0 0;
-    margin: auto;
-  }
-  .photos {
-    background: #FFFFFF;
-    padding: 5%;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  }
-  .btn-perfil{
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 20%;
-    margin-left: 60%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .title{
-    font-family: "Roboto", sans-serif;
-    text-align: center;
-  }
-  .btn {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #28d;
-    width: 70%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-  }
-  .photos button:hover,.form button:active,.form button:focus {
-    background: #17c;
-  }
-  .error{
-    color: red;
-  }
-</style>

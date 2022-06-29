@@ -17,24 +17,23 @@
                 </template>
 
                 <v-img
-                    :src="post.name"
-                    @dblclick="darLike(post.likes, post.id)"
+                    :src="image.name"
                 ></v-img>
 
                 <v-card-title>
                   <v-avatar style="margin-right: 15px">
                     <img
-                        :src="post.owner[2]"
+                        :src="image.owner[2]"
                         alt="John"
                     >
                   </v-avatar>
                   <span style="margin-top: 15px;">
-                    {{ post.owner[1] }}
+                    {{ image.owner[1] }}
                   </span>
                 </v-card-title>
 
                 <v-card-text>
-                  <div style="text-align: justify">{{post.descripcion}}</div>
+                  <div style="text-align: justify">{{image.descripcion}}</div>
                 </v-card-text>
 
                 <v-divider class="mx-4"></v-divider>
@@ -42,36 +41,24 @@
                 <v-card-title>Paisaje Sonoro</v-card-title>
                 <v-card-text>
                   <audio controls class="audioControl" style="width: 100%">
-                    <source :src="post.soundscape">
+                    <source :src="image.soundscape">
                   </audio>
                 </v-card-text>
 
+                <v-divider class="mx-4"></v-divider>
+
+                <v-card-title>Reportes</v-card-title>
+                <v-card-text v-for="(reporte,index) in this.image.reporte" :key="index">
+                  <div style="text-align: justify">{{reporte}}</div>
+                </v-card-text>
+
                 <v-card-actions>
-
-
                   <v-btn
                       color="deep-purple lighten-2"
                       text
-                      @click="comentarios(post.id)"
+                      @click="validarReporte()"
                   >
-                    Comentarios
-                  </v-btn>
-
-                  <v-btn
-                      color="deep-purple lighten-2"
-                      text
-                      @click="reportarPublicacion(post.id)"
-                  >
-                    Reportar
-                  </v-btn>
-
-                  <v-spacer></v-spacer>
-                  <v-btn icon
-                        :color="post.likes.includes(user.data.email)?'red':''"
-                        @click="darLike(post.likes, post.id)"
-                  >
-                    <span>{{post.likes.length}}</span>
-                    <v-icon>mdi-heart</v-icon>
+                    Validar reporte
                   </v-btn>
                 </v-card-actions>
 
@@ -82,21 +69,17 @@
                   v-model="visibility"
                   persistent
                   max-width="600"
-              >
+                >
                 <v-card>
                   <v-card-title class="text-h5">
-                    Reportar Publicación
+                    Validar reporte
                   </v-card-title>
                   <v-card-text>
                     <v-row>
                       <v-col
                           cols="12"
                       >
-                        <v-text-field
-                            v-model="descripcion"
-                            label="Descripción"
-                            required
-                        ></v-text-field>
+                      <span>¿Qué desea realizar con este reporte?</span>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -114,7 +97,15 @@
                         text
                         @click="confirmar()"
                     >
-                      Enviar
+                      Aceptar reporte
+                    </v-btn>
+                    
+                    <v-btn
+                        color="red darken-1"
+                        text
+                        @click="rechazar()"
+                    >
+                      Rechazar reporte
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -133,7 +124,6 @@ export default {
   props: {
     id: String
   },
-  name: 'post-collection',
   data () {
     return {
       visibility: false,
@@ -147,41 +137,33 @@ export default {
     ...mapGetters([
       'getImageById'
     ]),
-    post () {
+    image () {
       return this.getImageById(this.id)
     }
   },
   methods: {
     ...mapActions([
-      'getImages',
-      'reportPost',
-      'giveLike',
-      'removeLike'
+      'confirmReport',
+      'declineReport'
     ]),
-    reportarPublicacion () {
+    volver () {
+      this.$router.push({name: 'reportes'})
+    },
+    validarReporte () {
       this.visibility = true
     },
     confirmar () {
+      this.confirmReport(this.image.id)
       this.visibility = false
-      this.reportPost({id: this.id, descripcion: this.descripcion})
+      this.$router.push({name: 'reports'})
+    },
+    rechazar () {
+      this.declineReport(this.image.id)
+      this.visibility = false
+      this.$router.push({name: 'reports'})
     },
     cancelar () {
       this.visibility = false
-    },
-    darLike (likes, id) {
-      var email = this.user.data.email
-      var res = likes.find(like => like === email)
-      if (res === undefined) {
-        this.giveLike({id: id, email: email})
-      } else {
-        this.removeLike({id: id, email: email})
-      }
-    },
-    seguirUsuario (email) {
-      this.followUser(email)
-    },
-    comentarios (id) {
-      this.$router.push({name: 'comments', params: { id: id }})
     }
   },
   async created () {
