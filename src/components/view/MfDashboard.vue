@@ -19,7 +19,7 @@
           <v-icon>mdi-account</v-icon>
         </v-btn>
 
-        <v-btn value="reports" @click="$router.push({name:'reports'})" v-if="this.user.esAdmin">
+        <v-btn value="reports" @click="$router.push({name:'reports'})" v-if="this.user.data.esAdmin">
           <span>Reports</span>
           <v-icon>mdi-alert</v-icon>
         </v-btn>
@@ -38,39 +38,10 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
-  components: {  },
-  data () {
-    return {
-      value:'search',
-      images: []
-    }
-  },
   computed: {
-    ...mapGetters([
-      'getUser'
-    ]),
     ...mapState([
       'user'
     ])
-  },
-  methods: {
-    ...mapActions([
-      'addPhotoFile',
-      'getCurrentUser',
-      'getImages'
-    ]),
-    addPhoto () {
-    }
-  },
-  created () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    }
-  },
-  updated () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    }
   }
 }
 </script>

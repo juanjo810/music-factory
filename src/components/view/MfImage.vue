@@ -221,11 +221,6 @@ export default {
     comentarios () {
       this.$router.push({name: 'comments', params: { id: this.id }})
     }
-  },
-  created () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    }
   }
 }
 </script>
