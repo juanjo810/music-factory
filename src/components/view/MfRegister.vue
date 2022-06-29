@@ -124,7 +124,7 @@
             <v-col
                 cols="12"
             >
-            <b>Ha sido registrado correctamente.</b><br> 
+            <b>Ha sido registrado correctamente.</b><br>
             Por favor, <b>verifique su cuenta</b> haciendo click en el link que hemos enviado a su correo electrónico
             </v-col>
           </v-row>
@@ -187,6 +187,9 @@ export default {
       this.visibility = false
       this.$router.push({name: 'login'})
     }
+  },
+  mounted(){
+    console.log(this.$route.params)
   }
 }
 </script>

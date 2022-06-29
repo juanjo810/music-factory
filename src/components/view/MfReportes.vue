@@ -33,9 +33,6 @@ export default {
     }
   },
   created () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    }
   }
 }
 </script>

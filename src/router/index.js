@@ -1,6 +1,7 @@
 import Vue from 'vue'
+import {auth} from '@/api/firebase'
 import Router from 'vue-router'
-
+import store from '@/store'
 import MfLogin from '@/components/view/MfLogin.vue'
 import MfRegister from '@/components/view/MfRegister.vue'
 import MfForgot from '@/components/view/MfForgot.vue'
@@ -16,112 +17,203 @@ import MfDemo from '@/components/view/MfDemo.vue'
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'login',
-      component: MfLogin
-    },
-    {
-      path: '/register/',
-      name: 'register',
-      component: MfRegister
-    },
-    {
-      path: '/forgotPass/',
-      name: 'forgotPass',
-      component: MfForgot,
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: MfDashboard,
-      redirect: () => {
-        return {name:'recent'}
-      },
-      children:[
+const router =  new Router({
+    routes: [
         {
-          path: 'recent',
-          name: 'recent',
-          component: () => import('@/components/view2/Recent.vue'),
+            path: '/',
+            name: 'login',
+            component: MfLogin,
+            meta: {
+                requiresAuth: false
+            }
         },
         {
-          path: 'search',
-          name: 'search',
-          component: () => import('@/components/view2/Search.vue'),
+            path: '/register/:id',
+            name: 'register',
+            component: MfRegister,
+            meta: {
+                requiresAuth: false
+            }
         },
         {
-          path: 'profile',
-          name: 'profile',
-          component: () => import('@/components/view2/Profile.vue'),
+            path: '/forgotPass/',
+            name: 'forgotPass',
+            component: MfForgot,
+            meta: {
+                requiresAuth: false
+            }
         },
         {
-          path: 'reports',
-          name: 'reports',
-          component: () => import ('@/components/view2/Reports.vue')
+            path: '/dashboard',
+            name: 'dashboard',
+            component: MfDashboard,
+            meta: {
+                requiresAuth: true
+            },
+            redirect: () => {
+                return {name: 'recent'}
+            },
+            children: [
+                {
+                    path: 'recent',
+                    name: 'recent',
+                    component: () => import('@/components/view2/Recent.vue'),
+                    meta: {
+                        requiresAuth: true
+                    },
+
+                },
+                {
+                    path: 'search',
+                    name: 'search',
+                    component: () => import('@/components/view2/Search.vue'),
+                    meta: {
+                        requiresAuth: true
+                    },
+                },
+                {
+                    path: 'profile',
+                    name: 'profile',
+                    component: () => import('@/components/view2/Profile.vue'),
+                    meta: {
+                        requiresAuth: true
+                    },
+                },
+                {
+                    path: 'reports',
+                    name: 'reports',
+                    component: () => import ('@/components/view2/Reports.vue'),
+                    meta: {
+                        requiresAuth: true
+                    },
+                }
+            ]
+        },
+        {
+            path: '/misFotos/',
+            name: 'misFotos',
+            component: MfMisFotos,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: '/perfil/',
+            name: 'perfil',
+            component: MfPerfil,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: ':id',
+            name: 'image',
+            component: MfImage,
+            props: true,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: ':id',
+            name: 'post',
+            component: () => import('@/components/MfPostsUser.vue'),
+            props: true,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: ':id',
+            name: 'comments',
+            component: () => import('@/components/view2/Comentarios.vue'),
+            props: true
+        },
+        {
+            path: '/reportes',
+            name: 'reportes',
+            component: MfReportes,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: ':id',
+            name: 'report',
+            component: () => import('@/components/view2/Report.vue'),
+            props: true,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: 'otropefil/:email',
+            name: 'otroPerfil',
+            component: MfOtroPerfil,
+            props: true,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: '/perfil/modificaDatos',
+            name: 'modificaDatos',
+            component: MfModifica,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: '/perfil/modificaContra',
+            name: 'modificaContra',
+            component: MfModificaContra,
+            meta: {
+                requiresAuth: true
+            },
+        },
+        {
+            path: '/demo',
+            name: 'demo',
+            component: MfDemo,
+            meta: {
+                requiresAuth: false
+            }
         }
-      ]
-    },
-    {
-      path: '/misFotos/',
-      name: 'misFotos',
-      component: MfMisFotos
-    },
-    {
-      path: '/perfil/',
-      name: 'perfil',
-      component: MfPerfil
-    },
-    {
-      path: ':id',
-      name: 'image',
-      component: MfImage,
-      props: true
-    },
-    {
-      path: ':id',
-      name: 'post',
-      component: () => import('@/components/MfPostsUser.vue'),
-      props: true
-    },
-    {
-      path: ':id',
-      name: 'comments',
-      component: () => import('@/components/view2/Comentarios.vue'),
-      props: true
-    },
-    {
-      path: '/reportes',
-      name: 'reportes',
-      component: MfReportes
-    },
-    {
-      path: ':id',
-      name: 'report',
-      component: () => import('@/components/view2/Report.vue'),
-      props: true
-    },
-    {
-      path: ':email',
-      name: 'otroPerfil',
-      component: MfOtroPerfil,
-      props: true,
-    },
-    {
-      path: '/perfil/modificaDatos',
-      name: 'modificaDatos',
-      component: MfModifica
-    },
-    {
-      path: '/perfil/modificaContra',
-      name: 'modificaContra',
-      component: MfModificaContra
-    },
-    {
-      path: '/demo',
-      name: 'demo',
-      component: MfDemo
-    }
-  ]
+    ]
 })
+
+export default router
+
+router.beforeEach((to, from , next) => {
+    // instead of having to check every route record with
+    // to.matched.some(record => record.meta.requiresAuth)
+    console.log(to)
+    console.log(from)
+    console.log(next)
+    console.log(store.state.user)
+    console.log(auth.currentUser)
+    console.log(to.meta.requiresAuth)
+
+
+    if (to.meta.requiresAuth && !auth.currentUser)
+    {
+        next({name:'login'})
+    }else{
+        if(!to.meta.requiresAuth && auth.currentUser){
+            next({name:'dashboard'})
+        }
+        next()
+    }
+
+    /*if (to.meta.requiresAuth && !store.state.user.loggedIn) {
+       console.log("Entro")
+        // this route requires auth, check if logged in
+        // if not, redirect to login page.
+        return {
+            path: '/',
+            // save the location we were at to come back later
+            query: { redirect: to.fullPath },
+        }
+    }*/
+})
+

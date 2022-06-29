@@ -106,7 +106,7 @@ export default {
     },
     continuar () {
       this.visibility = false
-      this.$router.push({name: 'login'})
+     // this.$router.push({name: 'login'})
     }
   }
 }

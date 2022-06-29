@@ -78,7 +78,7 @@
                   >
                     Generar paisaje sonoro
                   </v-btn>
-                  
+
                   <v-btn
                       color=""
                       text
@@ -105,7 +105,7 @@
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                 </v-card-actions>
-                
+
                 <span style="color: red" v-if="error">{{ error }}</span>
               </v-card>
               <v-dialog
@@ -224,7 +224,7 @@ export default {
   },
   created () {
     if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
+    //  this.$router.push({name: 'login'})
     }
   }
 }

@@ -400,8 +400,13 @@ export default {
       this.$router.push({name: 'image', params: { id: imagen.id }})
     },
     async cerrarSesion () {
-      await this.signOut()
-      this.$router.push({name: 'login'})
+       this.signOut()
+      .then(
+          ()=>{
+           this.$router.push({name: 'login'})
+          }
+      )
+
     },
     confirmarBorrado () {
       this.visibility2 = true

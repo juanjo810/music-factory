@@ -63,14 +63,14 @@ export default {
     }
   },
   created () {
-    if (!this.user.loggedIn) {
+    /*if (!this.user.loggedIn) {
       this.$router.push({name: 'login'})
-    }
+    }*/
   },
   updated () {
-    if (!this.user.loggedIn) {
+   /* if (!this.user.loggedIn) {
       this.$router.push({name: 'login'})
-    }
+    }*/
   }
 }
 </script>

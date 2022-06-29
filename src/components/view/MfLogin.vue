@@ -44,6 +44,7 @@
             label="Contraseña"
             counter
             @click:append="visible = !visible"
+            v-on:keyup.enter="logIn"
           ></v-text-field>
 
           <span style="color: red" v-if="error">{{ error }}</span>
@@ -111,14 +112,14 @@ export default {
       'loginUser',
       'getCurrentUser'
     ]),
-    async logIn () {
+    logIn () {
       if (this.email !== '' || this.password !== '') {
-        await this.loginUser({ email: this.email, password: this.password })
-        this.email = ''
-        this.password = ''
-        if (this.error === '') {
+        this.loginUser({ email: this.email, password: this.password })
+        .then(()=>{
+          console.log("OK")
           this.$router.push({name: 'dashboard'})
-        }
+        })
+        .catch(console.log)
       }
     },
     irADemo () {

@@ -97,8 +97,11 @@ export default {
   },
   updated () {
     if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
+     // this.$router.push({name: 'login'})
     }
+  },
+  mounted() {
+    console.log(this.$route.params)
   }
 }
 </script>
