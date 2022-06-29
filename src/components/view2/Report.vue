@@ -166,8 +166,8 @@ export default {
       this.visibility = false
     }
   },
-  async created () {
-    await this.getImages()
+  mounted () {
+    this.getImages()
   }
 }
 </script>

@@ -69,16 +69,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages',
-      'changeInfo',
-      'changePassword',
-      'signOut'
+      'getImages'
       ]),
     detallesImagen (imagen) {
       this.$router.push({name: 'report', params: { id: imagen.id }})
     }
   },
-  created() {
+  mounted () {
     this.getImages();
   },
 };

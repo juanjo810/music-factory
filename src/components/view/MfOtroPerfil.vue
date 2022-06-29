@@ -95,10 +95,8 @@ export default {
       this.$router.push({name: 'profile'})
     }
   },
-  updated () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    }
+  mounted() {
+    console.log(this.$route.params)
   }
 }
 </script>

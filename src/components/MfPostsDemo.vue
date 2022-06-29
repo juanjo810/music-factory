@@ -67,8 +67,8 @@ export default {
       return this.getFivePosts
     }
   },
-  async created () {
-    await this.getImages
+  mounted () {
+    this.getImages
   }
 }
 </script>

@@ -186,8 +186,8 @@ export default {
       this.$router.push({name: 'comments', params: { id: id }})
     }
   },
-  async created () {
-    await this.getImages()
+  mounted () {
+    this.getImages()
   }
 }
 </script>

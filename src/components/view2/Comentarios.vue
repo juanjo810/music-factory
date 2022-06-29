@@ -173,7 +173,7 @@ export default {
       this.getImageComments({id: this.id, start: id})
     }
   },
-  created () {
+  mounted () {
     this.getImageComments({id: this.id, start: ''})
   }
 }

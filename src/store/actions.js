@@ -3,25 +3,34 @@ import API from '@/api'
 
 export default{
   // Fetch user
-  async loginUser ({ commit }, { email, password }) {
-    commit(types.LOGIN_USER_REQUEST)
-    await API.login(email, password)
-      .then((userCredential) => {
-        if (!userCredential.user.emailVerified) {
-          API.logOut()
-          commit(types.LOGIN_USER_FAILURE, { error: 'No ha verificado su cuenta' })
-        } else {
-          API.getUserData()
-            .then((credentials) => commit(types.LOGIN_USER_SUCCESS, credentials))
-        }
-      })
-      .catch((error) => {
-        if (error.code === 'auth/user-not-found') {
-          commit(types.LOGIN_USER_FAILURE, { error: 'El email introducido no está registrado' })
-        } else if (error.code === 'auth/wrong-password') {
-          commit(types.LOGIN_USER_FAILURE, { error: 'La contraseña introducida es incorrecta' })
-        }
-      })
+  loginUser ({ commit }, { email, password }) {
+    return new Promise((resolve, reject)=>{
+      commit(types.LOGIN_USER_REQUEST)
+      API.login(email, password)
+          .then((userCredential) => {
+            if (!userCredential.user.emailVerified) {
+              API.logOut()
+              commit(types.LOGIN_USER_FAILURE, { error: 'No ha verificado su cuenta' })
+              reject();
+            } else {
+              API.getUserData()
+                  .then((credentials) => {
+                    commit(types.LOGIN_USER_SUCCESS, credentials)
+                    resolve()
+                  })
+            }
+          })
+          .catch((error) => {
+            if (error.code === 'auth/user-not-found') {
+              commit(types.LOGIN_USER_FAILURE, { error: 'El email introducido no está registrado' })
+              reject()
+            } else if (error.code === 'auth/wrong-password') {
+              commit(types.LOGIN_USER_FAILURE, { error: 'La contraseña introducida es incorrecta' })
+              reject()
+            }
+          })
+    })
+
   },
 
   // Fetch user
@@ -207,7 +216,7 @@ export default{
       } else if (xhr.status === 209) {
         commit(types.GEN_SOUNDSCAPE_FAILURE, {error: 'No se han reconocido objetos en la imagen. Inténtelo de nuevo.'})
       } else {
-        
+
         commit(types.GEN_SOUNDSCAPE_FAILURE, {error: ' ' + xhr.status + 'Fallo en la petición HTTP'})
       }
     }
@@ -247,9 +256,18 @@ export default{
   },
 
   signOut ({commit}) {
-    commit(types.LOG_OUT_REQUEST)
-    API.logOut()
-      .then(() => { commit(types.LOG_OUT_SUCCESS) })
-      .catch((error) => { commit(types.LOG_OUT_FAILURE, {error}) })
+    return new Promise((resolve, reject) => {
+      commit(types.LOG_OUT_REQUEST)
+      API.logOut()
+          .then(() => {
+            commit(types.LOG_OUT_SUCCESS)
+            resolve()
+          })
+          .catch((error) => {
+            commit(types.LOG_OUT_FAILURE, {error})
+            reject(error)
+          })
+    })
+
   }
 }
