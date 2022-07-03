@@ -1,20 +1,21 @@
 /* eslint-disable */
 <template>
 <v-container>
-    <v-card>
+  <v-row align="center" justify="center">
+    <v-card max-width="1000">
       <div>
         <v-container>
           <v-row>
             <v-col cols="4">
               <img
-                :src="this.photo"
+                :src="otherUser.photoURL"
                 alt="John"
                 style="width: 100%; border-radius: 50%"
               />
             </v-col>
             <v-col cols="8">
               <div style="width: 100%">
-                <v-btn text color="primary" style="float: right" @click="seguirUsuario()" v-if="!user.data.siguiendo.includes(email)">
+                <v-btn text color="primary" style="float: right" @click="seguirUsuario()" v-if="!user.data.siguiendo.includes(otherUser.email)">
                   Seguir
                 </v-btn>
                 <v-btn text color="primary" style="float: right" @click="dejarDeSeguir()" v-else>
@@ -22,11 +23,11 @@
                 </v-btn>
               </div>
               <div style="margin-top: 30px">
-                <b>{{ this.name }}</b>
-                <p>{{ this.email }}</p>
+                <b>{{ otherUser.displayName }}</b>
+                <p>{{ otherUser.email }}</p>
                 <br />
                 <p>
-                  {{ this.descripcion }}
+                  {{ otherUser.descripcion }}
                 </p>
               </div>
             </v-col>
@@ -48,20 +49,21 @@
         </v-container>
       </div>
     </v-card>
+  </v-row>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   props: {
-    email: String,
-    name: String,
-    photo: String,
-    descripcion: String
+    id: String
   },
   computed: {
+    ...mapState([
+      'otherUser'
+    ]),
     ...mapGetters([
       'getPostsByUser',
       'getUser'
@@ -70,33 +72,32 @@ export default {
       return this.getUser
     },
     posts () {
-      return this.getPostsByUser(this.email)
+      return this.getPostsByUser(this.$route.params.id)
     }
   },
   methods: {
     ...mapActions([
       'followUser',
-      'stopFollow'
+      'stopFollow',
+      'getUserById'
     ]),
     detallesImagen (imagen) {
       this.$router.push({name: 'post', params: { id: imagen.id }})
     },
     seguirUsuario () {
-      this.followUser(this.email)
+      this.followUser(this.otherUser.email)
     },
     dejarDeSeguir () {
-      this.stopFollow(this.email)
-    }
-  },
-  created () {
-    if (!this.user.loggedIn) {
-      this.$router.push({name: 'login'})
-    } else if (this.user.data.email === this.email) {
-      this.$router.push({name: 'profile'})
+      this.stopFollow(this.otherUser.email)
     }
   },
   mounted() {
-    console.log(this.$route.params)
+    this.getUserById(this.$route.params.id)
+      .then(() => {
+        if (this.user.data.email === this.otherUser.email) {
+          this.$router.push({name: 'profile'})
+        }
+      })
   }
 }
 </script>

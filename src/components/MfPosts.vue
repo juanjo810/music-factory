@@ -5,14 +5,6 @@
         class="mx-auto my-12"
         v-for="(post,index) in posts" :key="index"
     >
-      <template slot="progress">
-        <v-progress-linear
-            color="deep-purple"
-            height="10"
-            indeterminate
-        ></v-progress-linear>
-      </template>
-
       <v-img
           :src="post.name"
           @dblclick="darLike(post.likes, post.id)"
@@ -25,7 +17,7 @@
               alt="John"
           >
         </v-avatar>
-        <span style="margin-top: 15px;">
+        <span style="margin-top: 15px; cursor: pointer">
           {{ post.owner[1] }}
         </span>
         <v-btn 
@@ -81,6 +73,15 @@
 
 
     </v-card>
+      <v-btn
+        color="green darken-1"
+        text
+        @click="cargarMas()"
+        v-if="this.noImages"
+        width="100%"
+      >
+        Cargar más
+      </v-btn>
 
     <v-dialog
         v-model="visibility"
@@ -139,7 +140,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'user'
+      'user',
+      'noImages'
     ]),
     ...mapGetters([
       'getPostsFollowing'
@@ -150,10 +152,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages',
       'reportPost',
       'giveLike',
-      'removeLike'
+      'removeLike',
+      'getPosts'
     ]),
     reportarPublicacion (idReportar) {
       this.visibility = true
@@ -176,17 +178,21 @@ export default {
       }
     },
     accederPerfil (owner) {
-      this.$router.push({name: 'otroPerfil', params: { email: owner[0], name: owner[1], photo: owner[2], descripcion: owner[3] }})
+      this.$router.push({name: 'otroPerfil', params: { id: owner[4] }})
     },
     seguirUsuario (email) {
       this.followUser(email)
     },
     comentarios (id) {
       this.$router.push({name: 'comments', params: { id: id }})
+    },
+    cargarMas () {
+      var id = this.posts[this.posts.length - 1].id
+      this.getPosts(id)
     }
   },
   mounted () {
-    this.getImages()
+    this.getPosts('')
   }
 }
 </script>

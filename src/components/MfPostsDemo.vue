@@ -58,7 +58,7 @@ export default {
       'user'
     ]),
     ...mapActions([
-      'getImages'
+      'getDemo'
     ]),
     ...mapGetters([
       'getFivePosts'
@@ -68,7 +68,7 @@ export default {
     }
   },
   mounted () {
-    this.getImages
+    this.getDemo
   }
 }
 </script>

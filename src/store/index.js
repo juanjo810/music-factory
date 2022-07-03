@@ -14,7 +14,18 @@ import getters from './getters'
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
-const dataState = createPersistedState({})
+const dataState = createPersistedState({
+  reducer: (state) => ({
+    user: state.user,
+    fetchingUser: state.fetchingUser,
+    fetchingImages: state.fetchingImages,
+    changingPass: state.changingPass,
+    generatingSoundscape: state.generatingSoundscape,
+    images: state.images,
+    noComments: state.noComments,
+    comments: state.comments
+  })
+})
 
 export default new Vuex.Store({
     strict: debug,

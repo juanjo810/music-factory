@@ -1,7 +1,8 @@
 /* eslint-disable */
 <template>
-  <v-container>
-    <v-card>
+  <v-container><v-row align="center" justify="center">
+    <v-card
+    max-width="1000" width="100%">
       <v-container>
         <v-row>
           <v-col>
@@ -115,7 +116,7 @@
         </v-row>
       </v-container>
     </v-card>
-  </v-container>
+  </v-row></v-container>
 </template>
 
 <script>
@@ -146,9 +147,6 @@ export default {
       'confirmReport',
       'declineReport'
     ]),
-    volver () {
-      this.$router.push({name: 'reportes'})
-    },
     validarReporte () {
       this.visibility = true
     },
@@ -165,9 +163,6 @@ export default {
     cancelar () {
       this.visibility = false
     }
-  },
-  mounted () {
-    this.getImages()
   }
 }
 </script>

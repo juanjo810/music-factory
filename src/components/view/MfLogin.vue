@@ -1,10 +1,12 @@
 /* eslint-disable */
 
 <template>
+<div>
   <v-card
       class="mx-auto my-12"
       max-width="374"
   >
+    
     <template slot="progress">
       <v-progress-linear
           color="deep-purple"
@@ -46,8 +48,6 @@
             @click:append="visible = !visible"
             v-on:keyup.enter="logIn"
           ></v-text-field>
-
-          <span style="color: red" v-if="error">{{ error }}</span>
         </v-col>
       </v-row>
 
@@ -80,6 +80,7 @@
       </v-btn>
     </v-card-actions>
   </v-card>
+</div>
 </template>
 
 

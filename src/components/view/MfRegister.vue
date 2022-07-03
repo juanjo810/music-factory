@@ -187,9 +187,6 @@ export default {
       this.visibility = false
       this.$router.push({name: 'login'})
     }
-  },
-  mounted(){
-    console.log(this.$route.params)
   }
 }
 </script>

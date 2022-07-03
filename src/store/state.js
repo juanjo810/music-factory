@@ -8,7 +8,10 @@ export default{
   changingPass: false,
   generatingSoundscape: false,
   noComments: true,
+  noImages: true,
+  soundscapeGenerated: false,
   error: '',
   images: [],
-  comments:   []
+  comments: [],
+  otherUser: {}
 }

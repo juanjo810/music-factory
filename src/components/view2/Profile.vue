@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container>
+    <v-container >
       <v-row>
         <v-col cols="4">
           <img
@@ -29,7 +29,7 @@
         </v-col>
       </v-row>
 
-      <h3>Publicaciones</h3>
+      <v-card-title>Publicaciones</v-card-title>
       <v-row>
         <v-col cols="4" v-for="(image, index) in this.images" :key="index">
           <v-card>
@@ -42,6 +42,16 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-btn
+        color="green darken-1"
+        text
+        @click="cargarMas()"
+        v-if="this.noImages"
+        width="100%"
+      >
+        Cargar más
+      </v-btn>
+      <v-card-text></v-card-text>
     </v-container>
     <v-row justify="center">
       <v-dialog
@@ -350,7 +360,8 @@ export default {
   computed: {
     ...mapState([
         "user",
-        'error'
+        'error',
+        'noImages'
       ]),
     ...mapGetters([
       'getImagesByUser'
@@ -361,7 +372,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages',
+      'getImagesUser',
       'changeInfo',
       'changePassword',
       'signOut',
@@ -399,6 +410,11 @@ export default {
     detallesImagen (imagen) {
       this.$router.push({name: 'image', params: { id: imagen.id }})
     },
+    cargarMas () {
+      var id = this.images[this.images.length - 1].id
+      console.log(id)
+      this.getImagesUser({id: this.user.data.id, start: id})
+    },
     async cerrarSesion () {
        this.signOut()
       .then(
@@ -426,7 +442,7 @@ export default {
     }
   },
   mounted () {
-    this.getImages();
+    this.getImagesUser({id: this.user.data.id, start: ''});
   },
 };
 </script>

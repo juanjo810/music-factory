@@ -1,7 +1,8 @@
 /* eslint-disable */
 <template>
-  <v-container>
-    <v-card>
+  <v-container><v-row align="center" justify="center">
+  <v-card
+    max-width="1000" width="100%">
       <v-container>
         <v-row>
           <v-col>
@@ -124,7 +125,7 @@
         </v-row>
       </v-container>
     </v-card>
-  </v-container>
+  </v-row></v-container>
 </template>
 
 <script>
@@ -153,7 +154,6 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages',
       'reportPost',
       'giveLike',
       'removeLike'
@@ -177,15 +177,9 @@ export default {
         this.removeLike({id: id, email: email})
       }
     },
-    seguirUsuario (email) {
-      this.followUser(email)
-    },
     comentarios (id) {
       this.$router.push({name: 'comments', params: { id: id }})
     }
-  },
-  mounted () {
-    this.getImages()
   }
 }
 </script>

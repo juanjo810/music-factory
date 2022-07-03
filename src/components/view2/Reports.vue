@@ -32,6 +32,15 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-btn
+        color="green darken-1"
+        text
+        @click="cargarMas()"
+        v-if="this.noImages"
+        width="100%"
+      >
+        Cargar más
+      </v-btn>
     </v-container>
   </div>
 </template>
@@ -58,7 +67,8 @@ export default {
   computed: {
     ...mapState([
         "user",
-        'error'
+        'error',
+        'noImages'
       ]),
     ...mapGetters([
       'getReports'
@@ -69,14 +79,18 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages'
+      'getReportes'
       ]),
     detallesImagen (imagen) {
       this.$router.push({name: 'report', params: { id: imagen.id }})
+    },
+    cargarMas () {
+      var id = this.images[this.images.length - 1].id
+      this.getReportes(id)
     }
   },
   mounted () {
-    this.getImages();
+    this.getReportes('');
   },
 };
 </script>

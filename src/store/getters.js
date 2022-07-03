@@ -1,3 +1,7 @@
+/**
+ * En este fichero se muestran los diferentes getters que se tienen del estado local
+ * del sistema.
+ */
 export default{
   getImageById: (state) => (id) => { return state.images.find(image => image.id === id) },
   getImagesByUser: (state) => (email) => {
@@ -26,9 +30,9 @@ export default{
     })
   },
   getReports: (state) => {
-    return state.images.filter(image => image.esReportado === true)
+    return state.images.filter(image => image.esReportada === true)
   },
-  getPostsByUser: (state) => (email) => {
-    return state.images.filter(image => image.esPublico === true && image.owner[0] === email)
+  getPostsByUser: (state) => (id) => {
+    return state.images.filter(image => image.esPublico === true && image.owner[4] === id)
   }
 }

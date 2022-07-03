@@ -25,7 +25,7 @@
               alt="John"
           >
         </v-avatar>
-        <span style="margin-top: 15px;" @click="accederPerfil(post.owner)">
+        <span style="margin-top: 15px; cursor: pointer" @click="accederPerfil(post.owner)">
           {{ post.owner[1] }}
         </span>
         <v-btn 
@@ -81,7 +81,15 @@
 
 
     </v-card>
-
+    <v-btn
+        color="green darken-1"
+        text
+        @click="cargarMas()"
+        v-if="this.noImages"
+        width="100%"
+      >
+        Cargar más
+      </v-btn>
     <v-dialog
         v-model="visibility"
         persistent
@@ -139,7 +147,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'user'
+      'user',
+      'noImages'
     ]),
     ...mapGetters([
       'getPostsNotFollowing'
@@ -150,7 +159,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getImages',
+      'getPosts',
       'reportPost',
       'giveLike',
       'removeLike',
@@ -177,17 +186,21 @@ export default {
       }
     },
     accederPerfil (owner) {
-      this.$router.push({name: 'otroPerfil', params: { email: owner[0], name: owner[1], photo: owner[2] }})
+      this.$router.push({name: 'otroPerfil', params: { id: owner[4] }})
     },
     seguirUsuario (email) {
       this.followUser(email)
     },
     comentarios (id) {
       this.$router.push({name: 'comments', params: { id: id }})
+    },
+    cargarMas () {
+      var id = this.posts[this.posts.length - 1].id
+      this.getPosts(id)
     }
   },
   mounted () {
-    this.getImages()
+    this.getPosts('')
   }
 }
 </script>

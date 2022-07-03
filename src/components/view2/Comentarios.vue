@@ -1,7 +1,21 @@
 <template>
 <div>
+  <v-row align="center" justify="center">
   <v-card
-    class="mx-auto">
+    max-width="1000" width="100%">
+      <v-img
+          :src="this.post.name"
+      ></v-img>
+      <v-divider class="mx-4"></v-divider>
+
+      <v-card-title>Paisaje Sonoro</v-card-title>
+      <v-card-text>
+        <audio controls class="audioControl" style="width: 100%">
+          <source :src="this.post.soundscape">
+        </audio>
+      </v-card-text>
+      
+      <v-divider class="mx-4"></v-divider>
    <v-toolbar dark color="primary">
         <v-toolbar-title>Comentarios</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -76,6 +90,7 @@
       </v-container>
     </v-form>
   </v-card>
+  </v-row>
       <v-dialog
         v-model="visibility"
         persistent
@@ -152,7 +167,6 @@ export default {
     ]),
     addComentario () {
       this.addComment({idImage: this.id, comment: this.comentario})
-      console.log(this.comentario)
     },
     eliminarComentario (id) {
       this.visibility = true
@@ -169,7 +183,6 @@ export default {
     },
     cargarMas () {
       var id = this.comments[this.comments.length - 1].id
-      debugger
       this.getImageComments({id: this.id, start: id})
     }
   },

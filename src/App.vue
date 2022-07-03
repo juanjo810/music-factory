@@ -24,7 +24,25 @@
       <v-spacer></v-spacer>
 
     </v-app-bar>
-
+    <v-dialog
+    v-if="error!==''"
+    v-model="error"
+    max-width="400">
+    <v-alert
+      type="error"
+      v-if="error!==''"
+    >{{error}}</v-alert>
+    </v-dialog>
+    <v-dialog
+    v-if="soundscapeGenerated"
+    v-model="soundscapeGenerated"
+    max-width="400"> 
+    <v-alert
+      type="info"
+      v-if="soundscapeGenerated"
+      style="text-align: center"
+    >Paisaje sonoro generado con exito</v-alert>
+    </v-dialog>
     <v-main style="background-color: #456">
       <router-view/>
     </v-main>
@@ -32,6 +50,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
   name: 'App',
@@ -39,5 +58,11 @@ export default {
   data: () => ({
     //
   }),
+  computed: {
+    ...mapState([
+      'error',
+      'soundscapeGenerated'
+    ])
+  }
 };
 </script>

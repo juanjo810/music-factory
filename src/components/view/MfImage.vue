@@ -1,7 +1,8 @@
 /* eslint-disable */
 <template>
-  <v-container>
-    <v-card>
+  <v-container><v-row align="center" justify="center">
+    <v-card
+    max-width="1000" width="100%">
       <v-container>
         <v-row>
           <v-col>
@@ -154,7 +155,7 @@
         </v-row>
       </v-container>
     </v-card>
-  </v-container>
+  </v-row></v-container>
 </template>
 
 <script>
@@ -198,7 +199,9 @@ export default {
     },
     eliminarPublicacion () {
       this.removePost({id: this.id, esPublico: this.image.esPublico})
-      this.$router.push({name: 'profile'})
+        .then(() => {
+          this.$router.push({name: 'profile'})
+        })
     },
     eliminarAudio () {
       this.removeSoundscape(this.id)

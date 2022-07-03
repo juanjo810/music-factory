@@ -1,18 +1,12 @@
 import Vue from 'vue'
-import {auth} from '@/api/firebase'
 import Router from 'vue-router'
 import store from '@/store'
 import MfLogin from '@/components/view/MfLogin.vue'
 import MfRegister from '@/components/view/MfRegister.vue'
 import MfForgot from '@/components/view/MfForgot.vue'
 import MfDashboard from '@/components/view/MfDashboard.vue'
-import MfPerfil from '@/components/view/MfPerfil.vue'
-import MfMisFotos from '@/components/view/MfMisFotos.vue'
 import MfImage from '@/components/view/MfImage.vue'
-import MfReportes from '@/components/view/MfReportes.vue'
 import MfOtroPerfil from '@/components/view/MfOtroPerfil.vue'
-import MfModificaContra from '@/components/view/MfModificaContra.vue'
-import MfModifica from '@/components/view/MfModifica.vue'
 import MfDemo from '@/components/view/MfDemo.vue'
 
 Vue.use(Router)
@@ -28,7 +22,7 @@ const router =  new Router({
             }
         },
         {
-            path: '/register/:id',
+            path: '/register',
             name: 'register',
             component: MfRegister,
             meta: {
@@ -90,23 +84,7 @@ const router =  new Router({
             ]
         },
         {
-            path: '/misFotos/',
-            name: 'misFotos',
-            component: MfMisFotos,
-            meta: {
-                requiresAuth: true
-            },
-        },
-        {
-            path: '/perfil/',
-            name: 'perfil',
-            component: MfPerfil,
-            meta: {
-                requiresAuth: true
-            },
-        },
-        {
-            path: ':id',
+            path: '/image/:id',
             name: 'image',
             component: MfImage,
             props: true,
@@ -115,7 +93,7 @@ const router =  new Router({
             },
         },
         {
-            path: ':id',
+            path: '/post/:id',
             name: 'post',
             component: () => import('@/components/MfPostsUser.vue'),
             props: true,
@@ -124,21 +102,16 @@ const router =  new Router({
             },
         },
         {
-            path: ':id',
+            path: '/:id/comments',
             name: 'comments',
             component: () => import('@/components/view2/Comentarios.vue'),
-            props: true
-        },
-        {
-            path: '/reportes',
-            name: 'reportes',
-            component: MfReportes,
+            props: true,
             meta: {
                 requiresAuth: true
             },
         },
         {
-            path: ':id',
+            path: '/report/:id',
             name: 'report',
             component: () => import('@/components/view2/Report.vue'),
             props: true,
@@ -147,26 +120,10 @@ const router =  new Router({
             },
         },
         {
-            path: 'otropefil/:email',
+            path: '/otroPerfil/:id',
             name: 'otroPerfil',
             component: MfOtroPerfil,
             props: true,
-            meta: {
-                requiresAuth: true
-            },
-        },
-        {
-            path: '/perfil/modificaDatos',
-            name: 'modificaDatos',
-            component: MfModifica,
-            meta: {
-                requiresAuth: true
-            },
-        },
-        {
-            path: '/perfil/modificaContra',
-            name: 'modificaContra',
-            component: MfModificaContra,
             meta: {
                 requiresAuth: true
             },
@@ -187,19 +144,11 @@ export default router
 router.beforeEach((to, from , next) => {
     // instead of having to check every route record with
     // to.matched.some(record => record.meta.requiresAuth)
-    console.log(to)
-    console.log(from)
-    console.log(next)
-    console.log(store.state.user)
-    console.log(auth.currentUser)
-    console.log(to.meta.requiresAuth)
-
-
-    if (to.meta.requiresAuth && !auth.currentUser)
+    if (to.meta.requiresAuth && !store.state.user.loggedIn)
     {
         next({name:'login'})
     }else{
-        if(!to.meta.requiresAuth && auth.currentUser){
+        if(!to.meta.requiresAuth && store.state.user.loggedIn){
             next({name:'dashboard'})
         }
         next()
