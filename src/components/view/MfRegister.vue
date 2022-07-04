@@ -171,17 +171,19 @@ export default {
     ...mapActions([
       'registerUser'
     ]),
-    async register () {
-      await this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
-      if (this.error === '') {
-        this.name = ''
-        this.surname = ''
-        this.email = ''
-        this.profilePhoto = ''
-        this.password = ''
-        this.password2 = ''
-        this.visibility = true
-      }
+    register () {
+      this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
+        .then(() => {
+          if (this.error === '') {
+            this.name = ''
+            this.surname = ''
+            this.email = ''
+            this.profilePhoto = ''
+            this.password = ''
+            this.password2 = ''
+            this.visibility = true
+          }
+        })
     },
     continuar () {
       this.visibility = false

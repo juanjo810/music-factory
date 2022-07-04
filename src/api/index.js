@@ -92,7 +92,8 @@ export default{
                       siguiendo: [userCredential.user.email],
                       email: userCredential.user.email,
                       nombre: name + ' ' + surname,
-                      photoURL: url
+                      photoURL: url,
+                      esAdmin: false
                     })
                     sendEmailVerification(userCredential.user)
                   })
@@ -111,11 +112,11 @@ export default{
                   displayName: name + ' ' + surname,
                   photoURL: url
                 })
-                var docRef = doc(firestore, 'usuarios', userCredential.uid)
+                var docRef = doc(firestore, 'usuarios', userCredential.user.uid)
                 setDoc(docRef, {
                   descripcion: '',
-                  siguiendo: [userCredential.email],
-                  email: userCredential.email,
+                  siguiendo: [userCredential.user.email],
+                  email: userCredential.user.email,
                   nombre: name + ' ' + surname,
                   photoURL: url
                 })
@@ -163,49 +164,100 @@ export default{
    * @param {string} descripcion descripción del usuario
    * @returns promesa del cambio en los datos del usuario
    */
-  async changeUserInfo (displayName, profilePhoto, descripcion) {
-    const user = auth.currentUser
-    var docRef = doc(firestore, 'usuarios', user.uid)
-    await updateDoc(docRef, {
-      descripcion: descripcion
-    })
-    var refImage = ''
-    if (displayName !== ' ') {
-      if (profilePhoto !== '') {
-        refImage = ref(profileRef, user.email + '.jpg')
-        await uploadBytes(refImage, profilePhoto)
-          .then((snapshot) => {
-            this.getURL(snapshot.ref)
-              .then ((url) => {
-                updateDoc(docRef, {
-                  nombre: displayName,
-                  photoURL: url
+   changeUserInfo (displayName, profilePhoto, descripcion) {
+    return new Promise((resolve,reject) => {
+      const user = auth.currentUser
+      var docRef = doc(firestore, 'usuarios', user.uid)
+      updateDoc(docRef, {
+        descripcion: descripcion
+      })
+        .then(() => {
+          var refImage = ''
+          if (displayName !== ' ') {
+            if (profilePhoto !== '') {
+              refImage = ref(profileRef, user.email + '.jpg')
+              uploadBytes(refImage, profilePhoto)
+                .then((snapshot) => {
+                  this.getURL(snapshot.ref)
+                    .then ((url) => {
+                      updateDoc(docRef, {
+                        nombre: displayName,
+                        photoURL: url
+                      })
+                        .then(() => {
+                          updateProfile(user, { photoURL: url, displayName: displayName })
+                            .then(() => {
+                              resolve(user)
+                            })
+                            .catch((error) => {
+                              reject(error)
+                            })
+                        })
+                        .catch((error) => {
+                          reject(error)
+                        })
+                    })
+                    .catch((error) => {
+                      reject(error)
+                    })
                 })
-                return updateProfile(user, { photoURL: url, displayName: displayName })
-              })
-          })
-      } else {
-        updateDoc(docRef, {
-          nombre: displayName
-        })
-        return updateProfile(user, { displayName: displayName })
-      }
-    }
-    if (profilePhoto !== '') {
-      refImage = ref(profileRef, user.email + '.jpg')
-      await uploadBytes(refImage, profilePhoto)
-        .then((snapshot) => {
-          this.getURL(snapshot.ref)
-            .then ((url) => {
-              updateDoc(docRef, {
-                photoURL: url
-              })
-              return updateProfile(user, { photoURL: url })
+                .catch((error) => {
+                  reject(error)
+                })
+            } else {
+            updateDoc(docRef, {
+              nombre: displayName
             })
+              .then(() => {
+                updateProfile(user, { displayName: displayName })
+                  .then(() => {
+                    resolve(user)
+                  })
+                  .catch((error) => {
+                    reject(error)
+                  })
+              })
+              .catch((error) => {
+                reject(error)
+              })
+          
+            }
+          }
+          if (profilePhoto !== '') {
+            refImage = ref(profileRef, user.email + '.jpg')
+            uploadBytes(refImage, profilePhoto)
+              .then((snapshot) => {
+                this.getURL(snapshot.ref)
+                  .then ((url) => {
+                    updateDoc(docRef, {
+                      photoURL: url
+                    })
+                      .then(() => {
+                        updateProfile(user, { photoURL: url })
+                          .then(() => {
+                            resolve(user)
+                          })
+                          .catch((error) => {
+                            reject(error)
+                          })
+                      })
+                      .catch((error) => {
+                        reject(error)
+                      })
+                  })
+                  .catch((error) => {
+                    reject(error)
+                  })
+              })
+              .catch((error) => {
+                reject(error)
+              })
+          }
         })
-    }
-    return new Promise ((resolve) => {
-      resolve()
+        .catch((error) => {
+          reject(error)
+        })
+    
     })
   },
 
@@ -221,13 +273,30 @@ export default{
       var docRef = doc(firestore, 'usuarios', user.uid)
       deleteDoc(docRef)
         .then(() => {
-          deleteUser(user)
-            .then(() => {
-              resolve()
-            })
-            .catch((error) => {
-              reject(error)
-            })
+          if (user.photoURL !== 'https://firebasestorage.googleapis.com/v0/b/musicfactory-4cc4a.appspot.com/o/profileImages%2Fdefault.jpg?alt=media&token=2b4bd686-4fb5-44df-a30c-5b809cfce3ca') {
+            var refImage = ref(profileRef, user.email + '.jpg')
+            deleteObject(refImage)
+              .then(() => {
+                deleteUser(user)
+                  .then(() => {
+                    resolve()
+                  })
+                  .catch((error) => {
+                    reject(error)
+                  })
+              })
+              .catch((error) => {
+                reject(error)
+              })
+            } else {
+              deleteUser(user)
+                .then(() => {
+                  resolve()
+                })
+                .catch((error) => {
+                  reject(error)
+                })
+            }
         })
         .catch((error) => {
           reject(error)

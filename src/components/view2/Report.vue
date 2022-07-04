@@ -152,8 +152,10 @@ export default {
     },
     confirmar () {
       this.confirmReport(this.image.id)
-      this.visibility = false
-      this.$router.push({name: 'reports'})
+        .then(() => {
+          this.visibility = false
+          this.$router.push({name: 'reports'})
+        })
     },
     rechazar () {
       this.declineReport(this.image.id)

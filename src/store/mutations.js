@@ -168,11 +168,6 @@ export default{
     state.changingPass = false
   },
 
-  [types.CHANGE_PASSWORD_REQUEST] (state) {
-    state.changingPass = true
-    state.error = ''
-  },
-
   [types.CHANGE_PASSWORD_SUCCESS] (state) {
     state.changingPass = false
     state.error = ''
@@ -181,11 +176,6 @@ export default{
   [types.CHANGE_PASSWORD_FAILURE] (state, { error }) {
     state.changingPass = false
     state.error = error
-  },
-
-  [types.CHANGE_INFO_REQUEST] (state) {
-    state.changingPass = true
-    state.error = ''
   },
 
   [types.CHANGE_INFO_SUCCESS] (state, {user, descripcion}) {
@@ -202,10 +192,6 @@ export default{
     state.error = error
   },
 
-  [types.LOG_OUT_REQUEST] (state) {
-    state.error = ''
-  },
-
   [types.LOG_OUT_FAILURE] (state, {error}) {
     state.error = error
   },
@@ -214,10 +200,6 @@ export default{
     state.user.loggedIn = false
     state.user.data = null
     state.images = []
-  },
-
-  [types.DELETE_ACCOUNT_REQUEST] (state) {
-    state.error = ''
   },
 
   [types.DELETE_ACCOUNT_FAILURE] (state, {error}) {
@@ -291,10 +273,6 @@ export default{
     state.fetchingImages = false
   },
 
-  [types.ADD_PHOTO_REQUEST] (state) {
-    state.error = ''
-  },
-
   [types.ADD_PHOTO_SUCCESS] (state, img) {
     var temp = [img, ...state.images]
     state.images = temp
@@ -302,10 +280,6 @@ export default{
 
   [types.ADD_PHOTO_FAILURE] (state, error) {
     state.error = error
-  },
-
-  [types.ADD_COMMENT_REQUEST] (state) {
-    state.error = ''
   },
 
   [types.ADD_COMMENT_SUCCESS] (state, com) {

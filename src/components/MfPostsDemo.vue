@@ -29,7 +29,7 @@
         </span>
       </v-card-title>
       <v-card-text>
-        <div style="text-align: justify">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley</div>
+        <div style="text-align: justify">{{ post.descripcion }}</div>
       </v-card-text>
       <v-divider class="mx-4"></v-divider>
       <v-card-title>Paisaje Sonoro</v-card-title>

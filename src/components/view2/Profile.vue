@@ -169,7 +169,7 @@
                     <v-btn
                       color="deep-purple lighten-2"
                       text
-                      @click="modificarInfo()"
+                      @click="modificaContra()"
                     >
                       Modificar contraseña
                     </v-btn>
@@ -404,7 +404,7 @@ export default {
     modificaContra () {
       this.changePassword({email: this.user.data.email, currentPassword: this.currentPassword, newPassword: this.password, repeatedPassword: this.password2})
       if (this.error === '') {
-        this.$router.push({name: 'perfil'})
+        this.visibility1 = false
       }
     },
     detallesImagen (imagen) {
@@ -428,12 +428,12 @@ export default {
       this.visibility2 = true
     },
     async borrarCuenta () {
-      await this.deleteAccount({images: this.images, email: this.email, password: this.password3})
-      if (this.error === '') {
+      this.deleteAccount({images: this.images, email: this.email, password: this.password3})
+      .then(() => {
         this.visibility1 = false
         this.visibility2 = false
         this.$router.push({name: 'login'})
-      }
+      })
     },
     cancelar () {
       this.email = ''

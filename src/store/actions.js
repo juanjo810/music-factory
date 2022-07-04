@@ -53,26 +53,27 @@ export default{
    * @param {File} profilePhoto archivo jpg con la foto del usuario (si ha rellenado el campo)
    */
   registerUser ({ commit }, { email, password, name, surname, password2, profilePhoto }) {
-    commit(types.REGISTER_USER_REQUEST)
-    if (password !== password2) {
-      console.log(password)
-      console.log(password2)
-      commit(types.REGISTER_USER_FAILURE, { error: 'Las contraseñas no coinciden' })
-    } else {
-      API.register(email, password, name, surname, profilePhoto)
-        .then(() => {
-          commit(types.REGISTER_USER_SUCCESS)
-        })
-        .catch(error => {
-          if (error.code === 'auth/weak-password') {
-            commit(types.REGISTER_USER_FAILURE, { error: 'La contraseña debe contener 6 caracteres o más' })
-          } else if (error.code === 'auth/email-already-in-use') {
-            commit(types.REGISTER_USER_FAILURE, { error: 'El email introducido ya está en uso' })
-          } else {
-            commit(types.REGISTER_USER_FAILURE, { error })
-          }
-        })
-    }
+    return new Promise((resolve) => {
+      commit(types.REGISTER_USER_REQUEST)
+      if (password !== password2) {
+        commit(types.REGISTER_USER_FAILURE, { error: 'Las contraseñas no coinciden' })
+      } else {
+        API.register(email, password, name, surname, profilePhoto)
+          .then(() => {
+            commit(types.REGISTER_USER_SUCCESS)
+            resolve()
+          })
+          .catch(error => {
+            if (error.code === 'auth/weak-password') {
+              commit(types.REGISTER_USER_FAILURE, { error: 'La contraseña debe contener 6 caracteres o más' })
+            } else if (error.code === 'auth/email-already-in-use') {
+              commit(types.REGISTER_USER_FAILURE, { error: 'El email introducido ya está en uso' })
+            } else {
+              commit(types.REGISTER_USER_FAILURE, { error })
+            }
+          })
+      }
+    })
   },
 
   /**
@@ -118,7 +119,6 @@ export default{
    * @param {string} repeatedPassword repetición de la nueva contraseña
    */
   changePassword ({commit}, {email, currentPassword, newPassword, repeatedPassword}) {
-    commit(types.CHANGE_PASSWORD_REQUEST)
     if (newPassword !== repeatedPassword) {
       commit(types.CHANGE_PASSWORD_FAILURE, { error: 'Las contraseñas no coinciden' })
     } else {
@@ -148,10 +148,9 @@ export default{
    * @param {File} profilePhoto nueva foto de perfil del usuario (si cambiara)
    */
   changeInfo ({commit}, {displayName, profilePhoto, descripcion}) {
-    commit(types.CHANGE_INFO_REQUEST)
     API.changeUserInfo(displayName, profilePhoto, descripcion)
-      .then(() => {
-        commit(types.CHANGE_INFO_SUCCESS, {user: API.getUser(), descripcion: descripcion})
+      .then((user) => {
+        commit(types.CHANGE_INFO_SUCCESS, {user: user, descripcion: descripcion})
       })
       .catch((error) => {
         commit(types.CHANGE_INFO_FAILURE, { error: error })})
@@ -167,18 +166,22 @@ export default{
    * @param {string} password contraseña del usuario 
    */
   deleteAccount ({commit}, {images, email, password}) {
-    commit(types.DELETE_ACCOUNT_REQUEST)
-    API.login(email, password)
+    return new Promise((resolve) => {
+      API.login(email, password)
       .then(async () => {
         for (const element of images) {
           await API.removePostById(element.id, element.esPublico)
             .catch((error) => { commit(types.DELETE_ACCOUNT_FAILURE, {error: error}) })
         }
         API.deleteUserAccount()
-          .then(() => { commit(types.DELETE_ACCOUNT_SUCCESS) })
+          .then(() => {
+            commit(types.DELETE_ACCOUNT_SUCCESS)
+            resolve()
+          })
           .catch((error) => { commit(types.DELETE_ACCOUNT_FAILURE, {error: error}) })
       })
       .catch(() => commit(types.DELETE_ACCOUNT_FAILURE, { error: 'Credenciales introducidas incorrectas' }))
+    })
   },
 
   /**
@@ -301,7 +304,6 @@ export default{
    * @param {String} comment texto del comentario a añadir
    */
   async addComment ({commit}, {idImage, comment}) {
-    commit(types.ADD_COMMENT_REQUEST)
     var res = await API.uploadComment(idImage, comment)
     if (res.code === undefined) {
       commit(types.ADD_COMMENT_SUCCESS, res)
@@ -318,7 +320,6 @@ export default{
    * @param {String} descripcion descripcion de la imagen
    */
   async addPhotoFile ({commit}, {file, descripcion}) {
-    commit(types.ADD_PHOTO_REQUEST)
     API.uploadPhoto(file, descripcion)
       .then((res) => {
         commit(types.ADD_PHOTO_SUCCESS, res)
@@ -486,14 +487,17 @@ export default{
    * reportada
    * @param {string} id id de la publicación
    */
-  async confirmReport ({commit}, id) {
-    API.removePostById(id, true)
-      .then(() => {
-        commit(types.CONFIRM_REPORT_SUCCESS)
-      })
-      .catch((error) => {
-        commit(types.CONFIRM_REPORT_FAILURE, error)
-      })
+  confirmReport ({commit}, id) {
+    return new Promise((resolve) =>{
+      API.removePostById(id, true)
+        .then(() => {
+          commit(types.CONFIRM_REPORT_SUCCESS)
+          resolve()
+        })
+        .catch((error) => {
+          commit(types.CONFIRM_REPORT_FAILURE, error)
+        })
+    })
   },
 
   /**
@@ -518,7 +522,6 @@ export default{
    */
   signOut ({commit}) {
     return new Promise((resolve, reject) => {
-      commit(types.LOG_OUT_REQUEST)
       API.logOut()
           .then(() => {
             commit(types.LOG_OUT_SUCCESS)
