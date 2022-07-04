@@ -1,3 +1,9 @@
+/**
+ * @module FirebaseAPI
+ * 
+ * @description En este fichero se realizan todas las llamadas al servidor Firebase
+ */
+
 import { auth, storage, firestore } from './firebase'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut, sendPasswordResetEmail, sendEmailVerification, updatePassword, deleteUser } from 'firebase/auth'
 import { ref, getDownloadURL, uploadBytes, deleteObject } from 'firebase/storage'

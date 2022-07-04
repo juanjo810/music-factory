@@ -1,6 +1,6 @@
 /**
- * En este fichero se muestran los diferentes getters que se tienen del estado local
- * del sistema.
+ * @module Getters
+ * @description En este fichero se muestran los diferentes getters que se tienen del estado local del sistema.
  */
 export default{
   getImageById: (state) => (id) => { return state.images.find(image => image.id === id) },

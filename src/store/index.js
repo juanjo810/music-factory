@@ -1,3 +1,9 @@
+/**
+ * @module Store
+ * 
+ * @description En este fichero se realiza la definición de la Store del sistema
+ */
+
 import Vue from 'vue'
 /* eslint-disable-next-line */
 import Vuex from 'vuex'

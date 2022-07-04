@@ -1,6 +1,7 @@
 /**
- * En este fichero se encuentran las macros correspondientes con cada
- * uno de los tipos de mutaciones que existen en el sistema
+ * @module MutationTypes
+ * 
+ * @description En este fichero se encuentran las macros correspondientes con cada uno de los tipos de mutaciones que existen en el sistema
  */
 
 export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST'

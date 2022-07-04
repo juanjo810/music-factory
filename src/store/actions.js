@@ -1,3 +1,10 @@
+/**
+ * @module Actions
+ * @description Este fichero muestra las diferentes acciones que realiza el sistema para proporcionar su funcionalidad.
+ * En todas las funciones se utiliza el objeto contexto recibido automáticamente como primer parámetro. En concreto se utiliza
+ * la propiedad commit para realizar las mutaciones del sistema.
+ */
+
 import * as types from './mutations-types'
 import API from '@/api'
 
@@ -7,9 +14,9 @@ export default{
    * Se llama a la función de inicio de sesión de la API que devuelve
    * las credenciales del usuario y, tras comprobar que ha verificado su email
    * se le da acceso y se actualiza el estado del sistema.
-   * @param {string} email email del usuario
-   * @param {string} password contraseña del usuario 
-   * @returns 
+   * @param {Object} usuario datos del usuario
+   * @prop {string} usuario.email email del usuario
+   * @prop {string} usuario.password contraseña del usuario 
    */
   loginUser ({ commit }, { email, password }) {
     return new Promise((resolve, reject)=>{
@@ -45,12 +52,13 @@ export default{
    * Función para realizar el registro de usuarios
    * Se llama a la función de la API para realizar el registro del usuario
    * en el sistema tras comprobar que las dos contraseñas introducidas son iguales.
-   * @param {string} email email del usuario
-   * @param {string} password contraseña del usuario 
-   * @param {string} name nombre del usuario
-   * @param {string} surname apellidos del usuario
-   * @param {string} password2 contraseña del usuario repetida (seguridad)
-   * @param {File} profilePhoto archivo jpg con la foto del usuario (si ha rellenado el campo)
+   * @param {Object} usuario datos del usuario
+   * @prop {string} usuario.email email del usuario
+   * @prop {string} usuario.password contraseña del usuario 
+   * @prop {string} usuario.name nombre del usuario
+   * @prop {string} usuario.surname apellidos del usuario
+   * @prop {string} usuario.password2 contraseña del usuario repetida (seguridad)
+   * @prop {File} usuario.profilePhoto archivo jpg con la foto del usuario (si ha rellenado el campo)
    */
   registerUser ({ commit }, { email, password, name, surname, password2, profilePhoto }) {
     return new Promise((resolve) => {
@@ -113,10 +121,11 @@ export default{
    * correspondiente de la API.
    * Se comprueba que el usuario ha introducido correctamente su contraseña actual
    * realizando de nuevo el login y si es correcta se cambia por la nueva.
-   * @param {string} email email del usuario
-   * @param {string} currentPassword contraseña actual del usuario
-   * @param {string} newPassword nueva contraseña del usuario
-   * @param {string} repeatedPassword repetición de la nueva contraseña
+   * @param {Object} usuario datos del usuario
+   * @prop {string} usuario.email email del usuario
+   * @prop {string} usuario.currentPassword contraseña actual del usuario
+   * @prop {string} usuario.newPassword nueva contraseña del usuario
+   * @prop {string} usuario.repeatedPassword repetición de la nueva contraseña
    */
   changePassword ({commit}, {email, currentPassword, newPassword, repeatedPassword}) {
     if (newPassword !== repeatedPassword) {
@@ -143,9 +152,10 @@ export default{
   /**
    * Función para cambiar la información personal del usuario, a excepción de la contraseña.
    * Se llama a la función de la API correspondiente
-   * @param {string} displayName nuevo nombre del usuario (si cambiara)
-   * @param {string} descripcion descripcion del usuario
-   * @param {File} profilePhoto nueva foto de perfil del usuario (si cambiara)
+   * @param {Object} usuario datos del usuario
+   * @prop {string} usuario.displayName nuevo nombre del usuario (si cambiara)
+   * @prop {string} usuario.descripcion descripcion del usuario
+   * @prop {File} usuario.profilePhoto nueva foto de perfil del usuario (si cambiara)
    */
   changeInfo ({commit}, {displayName, profilePhoto, descripcion}) {
     API.changeUserInfo(displayName, profilePhoto, descripcion)
@@ -161,9 +171,10 @@ export default{
    * Se comprueban las credenciales del usuario para asegurar que realmente
    * desea eliminar su cuenta. Después se borran todos los elementos de la base
    * de datos del usuario y se elimina la cuenta del usuario.
-   * @param {array} images imagenes subidas por el usuario 
-   * @param {string} email email del usuario
-   * @param {string} password contraseña del usuario 
+   * @param {Object} usuario datos del usuario
+   * @prop {array} usuario.images imagenes subidas por el usuario 
+   * @prop {string} usuario.email email del usuario
+   * @prop {string} usuario.password contraseña del usuario 
    */
   deleteAccount ({commit}, {images, email, password}) {
     return new Promise((resolve) => {
@@ -220,8 +231,9 @@ export default{
    * Función que recupera las 20 imágenes más recientes del usuario
    * empezando por la imagen con id 'start'
    * Si start está vacío se empieza desde el principio
-   * @param {string} id id del usuario
-   * @param {start} id de la imagen por la que queremos empezar
+   * @param {Object} usuario datos del usuario
+   * @prop {string} usuario.id id del usuario
+   * @prop {start} usuario.id de la imagen por la que queremos empezar
    */
    getImagesUser ({ commit }, {id, start}) {
     commit(types.FETCH_IMAGES_REQUEST, start)
@@ -287,8 +299,9 @@ export default{
    * Función que recupera los 10 comentarios de la publicación 'id'
    * empezando por el comentario con id 'start'
    * Si start está vacío se empieza desde el principio
-   * @param {string} id id de la imagen
-   * @param {start} id del comentario por el que queremos empezar
+   * @param {Object} publicacion publicacion de la que se quiere obtener los comentarios
+   * @prop {string} publicacion.id id de la imagen
+   * @prop {start} publicacion.id del comentario por el que queremos empezar
    */
   async getImageComments ({ commit }, {id, start}) {
     commit(types.FETCH_COMMENTS_REQUEST, start)
@@ -300,8 +313,9 @@ export default{
    * Función para añadir un comentario a una imagen.
    * Se llama a la función de la API para añadirlo a la base de datos
    * y se actualiza el estado
-   * @param {String} idImage id de la imagen a la que comentamo
-   * @param {String} comment texto del comentario a añadir
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {String} publicacion.idImage id de la imagen a la que comentamos
+   * @prop {String} publicacion.comment texto del comentario a añadir
    */
   async addComment ({commit}, {idImage, comment}) {
     var res = await API.uploadComment(idImage, comment)
@@ -316,8 +330,9 @@ export default{
    * Función utilizada para añadir una imagen al sistema junto a su descripcion
    * Se llama a la función correspondiente de la API para añadir la imagen
    * a la base de datos
-   * @param {File} file archivo correspondiente a la imagen que añadimos
-   * @param {String} descripcion descripcion de la imagen
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {File} publicacion.file archivo correspondiente a la foto de la publicacion que añadimos
+   * @prop {String} publicacion.descripcion descripcion de la publicacion
    */
   async addPhotoFile ({commit}, {file, descripcion}) {
     API.uploadPhoto(file, descripcion)
@@ -334,8 +349,9 @@ export default{
    * generado o no y eliminándolo también si fuera necesario.
    * Se llama a la función de la API correspondiente para eliminarlo de la base
    * de datos.
-   * @param {string} id id de la publicación que hay que borrar
-   * @param {boolean} esPublico indica si la publicación es pública
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {string} publicacion.id id de la publicación que hay que borrar
+   * @prop {boolean} esPublico indica si la publicación es pública
    * o no (si posee paisaje sonoro)
    */
   async removePost ({commit}, {id, esPublico}) {
@@ -370,8 +386,9 @@ export default{
   /**
    * Función utilizada para borrar un comentario de una imagen.
    * Se llama a la función de la API correspondiente.
-   * @param {string} idImage id de la imagen de la que hay que borrar el comentario
-   * @param {string} id id del comentario
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {string} publicacion.idImage id de la publicacion de la que hay que borrar el comentario
+   * @prop {string} publicacion.id id del comentario
    */
   async removeComment ({commit}, {idImage, id}) {
     API.removeCommentId(idImage, id)
@@ -388,9 +405,10 @@ export default{
    * de paisajes sonoros y reconocimiento de imágenes.
    * Una vez recibida respuesta se llama a la función de la API correspondiente para el amacenamiento
    * del audio generado.
-   * @param {string} url URL donde se encuentra la imagen a partir de la que hay
+   * @param {Object} soundscape parámetros del paisaje sonoro
+   * @prop {string} soundscape.url URL donde se encuentra la imagen a partir de la que hay
    * que generar el paisaje sonoro
-   * @param {id} id id de la imagen de la que hay que generar el paisaje.
+   * @prop {id} soundscape.id id de la imagen de la que hay que generar el paisaje.
    */
   generateSoundscape ({commit}, {url, id}) {
     commit(types.GEN_SOUNDSCAPE_REQUEST)
@@ -418,8 +436,9 @@ export default{
   /**
    * Función utilizada cuando un usuario da me gusta a una publicación.
    * Se llama a la función de la API correspondiente para almacenar el nuevo like.
-   * @param {string} id id de la imagen a la que dar Me gusta
-   * @param {id} email email del usuario que ha dado Me gusta
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {string} publicacion.id id de la publicacion a la que dar Me gusta
+   * @prop {id} publicacion.email email del usuario que ha dado Me gusta
    */
   async giveLike ({commit}, {id, email}) {
     API.givePostLike(id, email)
@@ -434,8 +453,9 @@ export default{
   /**
    * Función utilizada cuando un usuario quita un me gusta a una publicación.
    * Se llama a la función de la API correspondiente para eliminar el like.
-   * @param {string} id id de la imagen a la que quitar el Me gusta
-   * @param {id} email email del usuario que quiere quitar el Me gusta
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {string} publicacion.id id de la publicacion a la que quitar el Me gusta
+   * @prop {id} publicacion.email email del usuario que quiere quitar el Me gusta
    */
   async removeLike ({commit}, {id, email}) {
     API.removePostLike(id, email)
@@ -451,8 +471,9 @@ export default{
    * Función utilizada para editar la descripcion de una publicación.
    * Se llama a la función de la API correspondiente para actualizar la descripción de
    * la publicación
-   * @param {string} id id de la publicacion a la que editar la descripcion
-   * @param {string} descripcion descripcion de la publicación
+   * @param {Object} publicacion parámetros de la publicación
+   * @prop {string} publicacion.id id de la publicacion a la que editar la descripcion
+   * @prop {string} publicacion.descripcion descripcion de la publicación
    */
   editDescription ({commit}, {id, descripcion}) {
     API.editDescriptionById(id, descripcion)
@@ -468,8 +489,9 @@ export default{
    * Función utilizada para realizar un reporte de una publicación.
    * Se llama a la función de la API correspondiente para almacenar el nuevo
    * reporte
-   * @param {string} id id de la publicación que se desea reportar
-   * @param {string} descripcion descripción del reporte
+   * @param {Object} publicacion parámetros de la publicacion
+   * @prop {string} publicacion.id id de la publicación que se desea reportar
+   * @prop {string} publicacion.descripcion descripción del reporte
    */
   async reportPost ({commit}, {id, descripcion}) {
     API.reportPostById(id, descripcion)

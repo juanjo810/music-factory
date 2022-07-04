@@ -2,8 +2,9 @@ import Vue from 'vue'
 import * as types from './mutations-types'
 
 /**
- * En este fichero se detalla cada una de las mutaciones que se producen del estado
- * del sistema.
+ * @module Mutations
+ * 
+ * @description En este fichero se detalla cada una de las mutaciones que se producen del estado del sistema.
  */
 
 export default{
