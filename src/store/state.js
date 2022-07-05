@@ -10,6 +10,7 @@ export default{
   noComments: true,
   noImages: true,
   soundscapeGenerated: false,
+  deletingAccount: false,
   error: '',
   images: [],
   comments: [],

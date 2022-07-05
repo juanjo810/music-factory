@@ -83,8 +83,6 @@
                   <v-btn
                       color=""
                       text
-                      @click="generarAudio()"
-                      @
                       v-else
                   >
                     Generando paisaje sonoro

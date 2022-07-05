@@ -266,9 +266,18 @@
           <v-btn
               color="green darken-1"
               text
+              v-if="!this.deletingAccount"
               @click="borrarCuenta()"
           >
             Aceptar
+          </v-btn>
+
+          <v-btn
+            color=""
+            text
+            v-else
+          >
+            Borrando cuenta
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -361,7 +370,8 @@ export default {
     ...mapState([
         "user",
         'error',
-        'noImages'
+        'noImages',
+        'deletingAccount'
       ]),
     ...mapGetters([
       'getImagesByUser'
@@ -412,7 +422,6 @@ export default {
     },
     cargarMas () {
       var id = this.images[this.images.length - 1].id
-      console.log(id)
       this.getImagesUser({id: this.user.data.id, start: id})
     },
     async cerrarSesion () {
@@ -428,6 +437,11 @@ export default {
       this.visibility2 = true
     },
     async borrarCuenta () {
+      while (this.noImages) {
+        var id = this.images[this.images.length - 1].id
+        console.log(id)
+        await this.getImagesUser({id: this.user.data.id, start: id})
+      }
       this.deleteAccount({images: this.images, email: this.email, password: this.password3})
       .then(() => {
         this.visibility1 = false

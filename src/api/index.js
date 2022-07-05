@@ -82,55 +82,73 @@ export default{
     return new Promise ( (resolve, reject) => {
       if (profilePhoto !== '') {
         var refImage = ref(profileRef, email + '.jpg')
-        uploadBytes(refImage, profilePhoto)
-          .then((snapshot) => {
-            this.getURL(snapshot.ref)
-              .then((url) => {
-                resolve(createUserWithEmailAndPassword(auth, email, password)
-                  .then((userCredential) => {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            uploadBytes(refImage, profilePhoto)
+              .then((snapshot) => {
+                this.getURL(snapshot.ref)
+                  .then((url) => {
                     updateProfile(userCredential.user, {
                       displayName: name + ' ' + surname,
                       photoURL: url
                     })
+                      .then(() => {
+                        var docRef = doc(firestore, 'usuarios', userCredential.user.uid)
+                        setDoc(docRef, {
+                          descripcion: '',
+                          siguiendo: [userCredential.user.email],
+                          email: userCredential.user.email,
+                          nombre: name + ' ' + surname,
+                          photoURL: url
+                        })
+                        sendEmailVerification(userCredential.user)
+                        signOut(auth)
+                        resolve(userCredential.user)
+                      })
+                      .catch((error) => {
+                        reject(error)
+                      })
+                  })
+                  .catch(error => { reject(error) })
+              })
+              .catch(error => { reject(error) })
+          .catch(error => { reject(error) })
+          
+        })        
+      } else {
+        refImage = ref(profileRef, 'default.jpg')
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            this.getURL(refImage)
+              .then((url) => {
+                updateProfile(userCredential.user, {
+                  displayName: name + ' ' + surname,
+                  photoURL: url
+                })
+                updateProfile(userCredential.user, {
+                  displayName: name + ' ' + surname,
+                  photoURL: url
+                })
+                  .then(() => {
                     var docRef = doc(firestore, 'usuarios', userCredential.user.uid)
                     setDoc(docRef, {
                       descripcion: '',
                       siguiendo: [userCredential.user.email],
                       email: userCredential.user.email,
                       nombre: name + ' ' + surname,
-                      photoURL: url,
-                      esAdmin: false
+                      photoURL: url
                     })
                     sendEmailVerification(userCredential.user)
+                    signOut(auth)
+                    resolve(userCredential.user)
                   })
-                  .then(() => signOut(auth)))
+                  .catch((error) => {
+                    reject(error)
+                  })
               })
               .catch(error => { reject(error) })
-          })
-          .catch(error => { reject(error) })
-      } else {
-        refImage = ref(profileRef, 'default.jpg')
-        this.getURL(refImage)
-          .then((url) => {
-            resolve(createUserWithEmailAndPassword(auth, email, password)
-              .then((userCredential) => {
-                updateProfile(userCredential.user, {
-                  displayName: name + ' ' + surname,
-                  photoURL: url
-                })
-                var docRef = doc(firestore, 'usuarios', userCredential.user.uid)
-                setDoc(docRef, {
-                  descripcion: '',
-                  siguiendo: [userCredential.user.email],
-                  email: userCredential.user.email,
-                  nombre: name + ' ' + surname,
-                  photoURL: url
-                })
-                sendEmailVerification(userCredential.user)
-              })
-              .then(() => signOut(auth)))
-          })
-          .catch(error => { reject(error) })
+            
+          })        
       }
     })
   },

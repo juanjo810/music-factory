@@ -178,6 +178,7 @@ export default{
    */
   deleteAccount ({commit}, {images, email, password}) {
     return new Promise((resolve) => {
+      commit(types.DELETE_ACCOUNT_REQUEST)
       API.login(email, password)
       .then(async () => {
         for (const element of images) {
@@ -236,14 +237,17 @@ export default{
    * @prop {start} usuario.id de la imagen por la que queremos empezar
    */
    getImagesUser ({ commit }, {id, start}) {
-    commit(types.FETCH_IMAGES_REQUEST, start)
-    API.getMyImages(id, start)
-      .then((images) => {
-        commit(types.FETCH_IMAGES_SUCCESS, images)
-      })
-      .catch ((error) => {
-        commit(types.FETCH_IMAGES_FAILURE, error)
-      })
+    return new Promise((resolve) => {
+      commit(types.FETCH_IMAGES_REQUEST, start)
+      API.getMyImages(id, start)
+        .then((images) => {
+          commit(types.FETCH_IMAGES_SUCCESS, images)
+          resolve()
+        })
+        .catch ((error) => {
+          commit(types.FETCH_IMAGES_FAILURE, error)
+        })
+    })
   },
 
   /**

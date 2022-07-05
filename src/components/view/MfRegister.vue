@@ -89,8 +89,6 @@
               counter
               @click:append="visible2 = !visible2"
             ></v-text-field>
-
-            <span style="color: red" v-if="error">{{ error }}</span>
           </v-col>
         </v-row>
 
@@ -104,9 +102,18 @@
             color="deep-purple lighten-2"
             text
             @click="register()"
+            v-if="!fetchingUser"
         >
           Registrarse
-          <!--<span v-if="fetchingUser">Registrando...</span><span v-else>Iniciar sesión</span>-->
+        </v-btn>
+        
+        <v-btn
+            color="deep-purple lighten-2"
+            text
+            @click="register()"
+            v-else
+        >
+          Registrando
         </v-btn>
       </v-card-actions>
     </v-card>

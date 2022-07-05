@@ -203,14 +203,21 @@ export default{
     state.images = []
   },
 
+  [types.DELETE_ACCOUNT_REQUEST] (state) {
+    state.error = ''
+    state.deletingAccount = true
+  },
+
   [types.DELETE_ACCOUNT_FAILURE] (state, {error}) {
     state.error = error
+    state.deletingAccount = false
   },
 
   [types.DELETE_ACCOUNT_SUCCESS] (state) {
     state.user.loggedIn = false
     state.user.data = null
     state.images = []
+    state.deletingAccount = false
   },
 
   [types.FETCH_IMAGES_REQUEST] (state, start) {
