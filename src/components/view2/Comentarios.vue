@@ -75,6 +75,7 @@
               clearable
               label="Comentario"
               type="text"
+              @keyup.enter="addComentario()"
             >
               <template v-slot:append>
                 <v-fade-transition leave-absolute>

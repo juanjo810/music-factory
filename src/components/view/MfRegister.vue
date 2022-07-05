@@ -32,7 +32,7 @@
             <v-text-field
                 v-model="name"
                 label="Nombre"
-                required
+                :rules="rules"
             ></v-text-field>
           </v-col>
 
@@ -42,7 +42,7 @@
             <v-text-field
                 v-model="surname"
                 label="Apellidos"
-                required
+                :rules="rules"
             ></v-text-field>
           </v-col>
 
@@ -52,7 +52,7 @@
             <v-text-field
                 v-model="email"
                 label="Email"
-                required
+                :rules="rulesEmail"
             ></v-text-field>
           </v-col>
 
@@ -62,6 +62,7 @@
             <v-file-input
                 v-model="profilePhoto"
                 label="Foto de perfil"
+                accept="image/jpeg"
                 required
             ></v-file-input>
           </v-col>
@@ -76,6 +77,7 @@
               label="Contraseña"
               counter
               @click:append="visible1 = !visible1"
+              :rules="rules"
             ></v-text-field>
           </v-col>
           <v-col
@@ -88,6 +90,8 @@
               label="Repetir contraseña"
               counter
               @click:append="visible2 = !visible2"
+              @keyup.enter="register()"
+              :rules="rules"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -108,7 +112,7 @@
         </v-btn>
         
         <v-btn
-            color="deep-purple lighten-2"
+            color=""
             text
             @click="register()"
             v-else
@@ -165,7 +169,17 @@ export default {
       password2: '',
       visible1: false,
       visible2: false,
-      visibility: false
+      visibility: false,
+      rulesEmail: [
+        value => !!value || 'Required.',
+        value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
+        },
+      ],
+      rules: [
+        value => !!value || 'Required.'
+      ]
     }
   },
   computed: {
@@ -179,18 +193,20 @@ export default {
       'registerUser'
     ]),
     register () {
-      this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
-        .then(() => {
-          if (this.error === '') {
-            this.name = ''
-            this.surname = ''
-            this.email = ''
-            this.profilePhoto = ''
-            this.password = ''
-            this.password2 = ''
-            this.visibility = true
-          }
-        })
+      if (this.name !== '' && this.surname !== '' && this.email !== '' && this.password !== '' && this.password2 !== '') {
+        this.registerUser({ email: this.email, password: this.password, name: this.name, surname: this.surname, password2: this.password2, profilePhoto: this.profilePhoto })
+          .then(() => {
+            if (this.error === '') {
+              this.name = ''
+              this.surname = ''
+              this.email = ''
+              this.profilePhoto = ''
+              this.password = ''
+              this.password2 = ''
+              this.visibility = true
+            }
+          })
+      }
     },
     continuar () {
       this.visibility = false

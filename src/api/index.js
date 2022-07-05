@@ -114,7 +114,10 @@ export default{
               .catch(error => { reject(error) })
           .catch(error => { reject(error) })
           
-        })        
+        }) 
+        .catch((error) => {
+          reject(error)
+        })       
       } else {
         refImage = ref(profileRef, 'default.jpg')
         createUserWithEmailAndPassword(auth, email, password)
@@ -148,7 +151,10 @@ export default{
               })
               .catch(error => { reject(error) })
             
-          })        
+          })
+          .catch((error) => {
+            reject(error)
+          })    
       }
     })
   },

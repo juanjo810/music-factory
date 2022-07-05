@@ -109,10 +109,15 @@ export default{
    * @param {string} email email del usuario
    */
   resetPassword ({ commit }, email) {
-    commit(types.RESET_PASSWORD_REQUEST)
-    API.resetPass(email)
-      .then(() => commit(types.RESET_PASSWORD_SUCCESS))
-      .catch(error => commit(types.RESET_PASSWORD_FAILURE, { error }))
+    return new Promise((resolve) => {
+      commit(types.RESET_PASSWORD_REQUEST)
+      API.resetPass(email)
+        .then(() => {
+          commit(types.RESET_PASSWORD_SUCCESS)
+          resolve()
+        })
+        .catch(error => commit(types.RESET_PASSWORD_FAILURE, { error }))
+    })
   },
 
   /**

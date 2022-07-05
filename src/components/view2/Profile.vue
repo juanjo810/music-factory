@@ -95,7 +95,7 @@
                     <v-file-input
                     v-model="profilePhoto"
                     label="Foto de perfil"
-                    required
+                    accept="image/jpeg"
                     ></v-file-input>
                   </v-col>
                 </v-row>
@@ -235,7 +235,7 @@
               <v-text-field
                   v-model="email"
                   label="Email"
-                  required
+                  :rules="rulesEmail"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -311,8 +311,8 @@
             >
               <v-file-input
               v-model="foto"
-              label="Foto de perfil"
-              required
+              label="Foto"
+              accept="image/jpeg"
               ></v-file-input>
             </v-col>
           </v-row>
@@ -362,7 +362,17 @@ export default {
       email: '',
       password3: '' ,
       foto: '',
-      descFoto: ''
+      descFoto: '',
+      rulesEmail: [
+        value => !!value || 'Required.',
+        value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
+        },
+      ],
+      rules: [
+        value => !!value || 'Required.'
+      ]
     };
   },
   name: "Profile",
@@ -398,8 +408,12 @@ export default {
       this.descripcion = this.user.data.descripcion
     },
     addFoto () {
-      this.addPhotoFile({file: this.foto, descripcion: this.descFoto})
-      this.visibility3 = false
+      if (this.foto !== '') {
+        this.addPhotoFile({file: this.foto, descripcion: this.descFoto})
+        this.visibility3 = false
+        this.foto = ''
+        this.descFoto = ''
+      }
     },
     cancelarFoto () {
       this.visibility3 = false;
@@ -412,9 +426,11 @@ export default {
       }
     },
     modificaContra () {
-      this.changePassword({email: this.user.data.email, currentPassword: this.currentPassword, newPassword: this.password, repeatedPassword: this.password2})
-      if (this.error === '') {
-        this.visibility1 = false
+      if (this.currentPassword !== '' && this.password !== '' && this.password2 !== '') {
+        this.changePassword({email: this.user.data.email, currentPassword: this.currentPassword, newPassword: this.password, repeatedPassword: this.password2})
+        if (this.error === '') {
+          this.visibility1 = false
+        }
       }
     },
     detallesImagen (imagen) {
@@ -437,17 +453,19 @@ export default {
       this.visibility2 = true
     },
     async borrarCuenta () {
-      while (this.noImages) {
-        var id = this.images[this.images.length - 1].id
-        console.log(id)
-        await this.getImagesUser({id: this.user.data.id, start: id})
+      if (this.email !== '' && this.password3 !== '') {
+        while (this.noImages) {
+          var id = this.images[this.images.length - 1].id
+          console.log(id)
+          await this.getImagesUser({id: this.user.data.id, start: id})
+        }
+        this.deleteAccount({images: this.images, email: this.email, password: this.password3})
+        .then(() => {
+          this.visibility1 = false
+          this.visibility2 = false
+          this.$router.push({name: 'login'})
+        })
       }
-      this.deleteAccount({images: this.images, email: this.email, password: this.password3})
-      .then(() => {
-        this.visibility1 = false
-        this.visibility2 = false
-        this.$router.push({name: 'login'})
-      })
     },
     cancelar () {
       this.email = ''

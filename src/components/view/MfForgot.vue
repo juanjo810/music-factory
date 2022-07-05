@@ -101,8 +101,10 @@ export default {
     ]),
     restablecerPass () {
       this.resetPassword(this.email)
-      this.email = ''
-      this.visibility = true
+        .then(() => {
+          this.email = ''
+          this.visibility = true
+        })
     },
     continuar () {
       this.visibility = false
