@@ -112,7 +112,6 @@ export default{
 
   [types.FOLLOW_USER_SUCCESS] (state, email) {
     state.user.data.siguiendo.push(email)
-    Vue.set(state.user.data.siguiendo, state.data.siguiendo.lenght - 1, email)
   },
 
   [types.FOLLOW_USER_FAILURE] (state, error) {

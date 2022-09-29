@@ -424,7 +424,7 @@ export default{
     var xhr = new XMLHttpRequest()
     xhr.responseType = 'blob'
     var params = url
-    xhr.open('POST', 'http://65.108.220.52', true)
+    xhr.open('POST', 'http://167.235.152.190', true)
 
     xhr.onload = function () {
       if (xhr.status === 200) {

@@ -347,8 +347,10 @@ export default{
       updateDoc(docRef, {
         siguiendo: arrayUnion(email)
       })
-        .then(() => {resolve()})
-        .catch((error) => {reject(error)})
+        .then(() => {
+          resolve()})
+        .catch((error) => {
+          reject(error)})
     })
   },
 
@@ -849,7 +851,7 @@ export default{
   declineReportId (id) {
     return new Promise((resolve, reject) => {
       const postRef = doc(firestore, 'imagenes', id)
-      updateDoc(postRef, { esReportado: false, reporte: [] })
+      updateDoc(postRef, { esReportada: false, reporte: [] })
         .then(() => {
           resolve()
         })
