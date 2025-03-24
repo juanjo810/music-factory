@@ -8,6 +8,8 @@
 import * as types from './mutations-types'
 import API from '@/api'
 
+const URL = 'http://localhost:8000'
+
 export default{
   /**
    * Función para realizar el inicio de sesión de los usuarios
@@ -424,7 +426,7 @@ export default{
     var xhr = new XMLHttpRequest()
     xhr.responseType = 'blob'
     var params = url
-    xhr.open('POST', 'http://167.235.152.190', true)
+    xhr.open('POST', URL, true)
 
     xhr.onload = function () {
       if (xhr.status === 200) {

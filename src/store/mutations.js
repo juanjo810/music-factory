@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import { createStore } from 'vuex'
 import * as types from './mutations-types'
 
 /**
@@ -7,7 +7,7 @@ import * as types from './mutations-types'
  * @description En este fichero se detalla cada una de las mutaciones que se producen del estado del sistema.
  */
 
-export default{
+export default {
   [types.LOGIN_USER_REQUEST] (state) {
     state.fetchingUser = true
     state.error = ''
@@ -30,12 +30,11 @@ export default{
   },
 
   [types.REPORT_POST_SUCCESS] (state, {id, report}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.reporte = report
-        image.esReportado = true
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.reporte = report
+      image.esReportado = true
+    }
   },
 
   [types.REPORT_POST_FAILURE] (state, error) {
@@ -43,12 +42,11 @@ export default{
   },
 
   [types.DECLINE_REPORT_SUCCESS] (state, id) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.reporte = []
-        image.esReportado = false
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.reporte = []
+      image.esReportado = false
+    }
   },
 
   [types.DECLINE_REPORT_FAILURE] (state, error) {
@@ -56,12 +54,11 @@ export default{
   },
 
   [types.GIVE_LIKE_SUCCESS] (state, {id, likes}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.likes = likes
-        image.numLikes++
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.likes = likes
+      image.numLikes++
+    }
   },
 
   [types.GIVE_LIKE_FAILURE] (state, error) {
@@ -69,12 +66,11 @@ export default{
   },
 
   [types.REMOVE_LIKE_SUCCESS] (state, {id, likes}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.likes = likes
-        image.numLikes--
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.likes = likes
+      image.numLikes--
+    }
   },
 
   [types.REMOVE_LIKE_FAILURE] (state, error) {
@@ -82,12 +78,11 @@ export default{
   },
 
   [types.REMOVE_SOUND_SUCCESS] (state, id) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.esPublico = false
-        image.soundscape = ''
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.esPublico = false
+      image.soundscape = ''
+    }
   },
 
   [types.REMOVE_SOUND_FAILURE] (state, error) {
@@ -127,11 +122,10 @@ export default{
   },
 
   [types.EDIT_DESCRIPTION_SUCCESS] (state, {id, descripcion}) {
-    state.images.find(image => {
-      if (image.id === id) {
-        image.descripcion = descripcion
-      }
-    })
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.descripcion = descripcion
+    }
   },
 
   [types.EDIT_DESCRIPTION_FAILURE] (state, error) {
@@ -235,11 +229,7 @@ export default{
       } else {
         state.images.push(...images)
       }
-      if (images.length < 20) {
-        state.noImages = false  
-      } else {
-        state.noImages = true
-      }
+      state.noImages = images.length < 20
     } else {
       state.noImages = false
     }
@@ -265,11 +255,7 @@ export default{
       } else {
         state.comments.push(...comments)
       }
-      if (comments.length < 10) {
-        state.noComments = false  
-      } else {
-        state.noComments = true
-      }
+      state.noComments = comments.length < 10
     } else {
       state.noComments = false
     }
@@ -281,8 +267,7 @@ export default{
   },
 
   [types.ADD_PHOTO_SUCCESS] (state, img) {
-    var temp = [img, ...state.images]
-    state.images = temp
+    state.images = [img, ...state.images]
   },
 
   [types.ADD_PHOTO_FAILURE] (state, error) {
@@ -295,15 +280,15 @@ export default{
       ...com
     }
     state.comments.push(com)
-    Vue.set(state.comments, state.comments.lenght - 1, com)
   },
 
   [types.REMOVE_POST_SUCCESS] (state, id) {
     state.fetchingImages = false
     state.error = ''
-    var element = state.images.find(image => image.id === id)
-    var index = state.images.indexOf(element)
-    state.images.splice(index, 1)
+    const index = state.images.findIndex(image => image.id === id)
+    if (index !== -1) {
+      state.images.splice(index, 1)
+    }
   },
 
   [types.REMOVE_POST_FAILURE] (state, error) {
@@ -320,9 +305,11 @@ export default{
     state.generatingSoundscape = false
     state.error = ''
     state.soundscapeGenerated = true
-    var element = state.images.find(image => image.id === id)
-    element.esPublico = true
-    element.soundscape = url
+    const image = state.images.find(image => image.id === id)
+    if (image) {
+      image.esPublico = true
+      image.soundscape = url
+    }
   },
 
   [types.GEN_SOUNDSCAPE_FAILURE] (state, {error}) {
@@ -338,3 +325,4 @@ export default{
     state.error = error
   }
 }
+

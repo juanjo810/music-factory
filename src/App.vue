@@ -4,7 +4,7 @@
       app
       color="primary"
       dark
-      v-if="$route.name!='login' && $route.name!='register' && $route.name!='forgotPass'"
+      v-if="$route.name !== 'login' && $route.name !== 'register' && $route.name !== 'forgotPass'"
     >
       <div class="d-flex align-center">
         <v-img
@@ -15,54 +15,55 @@
           transition="scale-transition"
           width="40"
           style="cursor: pointer"
-          @click="$router.push({name: 'dashboard'})"
+          @click="$router.push({ name: 'dashboard' })"
         />
         <h1>MusicFactory</h1>
-        
       </div>
 
       <v-spacer></v-spacer>
-
     </v-app-bar>
     <v-dialog
-    v-if="error!==''"
-    v-model="error"
-    max-width="400">
-    <v-alert
-      type="error"
-      v-if="error!==''"
-    >{{error}}</v-alert>
+      v-if="error !== ''"
+      v-model="error"
+      max-width="400"
+    >
+      <v-alert
+        type="error"
+        v-if="error !== ''"
+      >{{ error }}</v-alert>
     </v-dialog>
     <v-dialog
-    v-if="soundscapeGenerated"
-    v-model="soundscapeGenerated"
-    max-width="400"> 
-    <v-alert
-      type="info"
       v-if="soundscapeGenerated"
-      style="text-align: center"
-    >Paisaje sonoro generado con exito</v-alert>
+      v-model="soundscapeGenerated"
+      max-width="400"
+    >
+      <v-alert
+        type="info"
+        v-if="soundscapeGenerated"
+        style="text-align: center"
+      >Paisaje sonoro generado con exito</v-alert>
     </v-dialog>
     <v-main style="background-color: #456">
-      <router-view/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'App',
+  setup() {
+    const store = useStore();
+    const error = computed(() => store.state.error);
+    const soundscapeGenerated = computed(() => store.state.soundscapeGenerated);
 
-  data: () => ({
-    //
-  }),
-  computed: {
-    ...mapState([
-      'error',
-      'soundscapeGenerated'
-    ])
-  }
+    return {
+      error,
+      soundscapeGenerated,
+    };
+  },
 };
 </script>
