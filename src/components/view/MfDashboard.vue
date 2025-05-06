@@ -23,7 +23,7 @@
           <v-btn
             value="reports"
             @click="$router.push({ name: 'reports' })"
-            v-if="this.user.data.esAdmin"
+            v-if="this.user.data != NULL && this.user.data.esAdmin"
           >
             <span>Reports</span>
             <v-icon>mdi-alert</v-icon>

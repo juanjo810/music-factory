@@ -5,7 +5,8 @@
         <v-col cols="4">
           <img
             :src="this.user.data.photoURL"
-            alt="John"
+            alt="Profile_Image"
+            class="rounded-circle"
             style="width: 100%; border-radius: 50%"
           />
         </v-col>

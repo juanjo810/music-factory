@@ -193,6 +193,7 @@ export default {
   [types.LOG_OUT_SUCCESS] (state) {
     state.user.loggedIn = false
     state.user.data = null
+    state.user.data = { photoURL: '', displayName: '', email: '', descripcion: '', siguiendo: [] }
     state.images = []
   },
 
@@ -209,6 +210,7 @@ export default {
   [types.DELETE_ACCOUNT_SUCCESS] (state) {
     state.user.loggedIn = false
     state.user.data = null
+    state.user.data = { photoURL: '', displayName: '', email: '', descripcion: '', siguiendo: [] }
     state.images = []
     state.deletingAccount = false
   },

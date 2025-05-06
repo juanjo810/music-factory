@@ -7,7 +7,6 @@
 
 import * as types from './mutations-types'
 import API from '@/api'
-
 const URL = 'http://localhost:8000'
 
 export default{
@@ -24,18 +23,13 @@ export default{
     return new Promise((resolve, reject)=>{
       commit(types.LOGIN_USER_REQUEST)
       API.login(email, password)
-          .then((userCredential) => {
-            if (!userCredential.user.emailVerified) {
-              API.logOut()
-              commit(types.LOGIN_USER_FAILURE, { error: 'No ha verificado su cuenta' })
-              reject();
-            } else {
-              API.getUserData()
-                  .then((credentials) => {
-                    commit(types.LOGIN_USER_SUCCESS, credentials)
-                    resolve()
-                  })
-            }
+          .then(() => {
+            API.getUserData()
+                .then((credentials) => {
+                  commit(types.LOGIN_USER_SUCCESS, credentials)
+                  resolve()
+                })
+            
           })
           .catch((error) => {
             if (error.code === 'auth/user-not-found') {
